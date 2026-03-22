@@ -9,7 +9,7 @@
 </head>
 <body>
 
-  <!-- PANTALLA DE LOGIN -->
+  <!-- LOGIN -->
   <div id="loginScreen" class="login-screen">
     <div class="login-box">
       <div class="login-logo">FUERZA <span>PRO</span></div>
@@ -27,35 +27,109 @@
     </div>
   </div>
 
-  <!-- PANTALLA PRINCIPAL -->
+  <!-- APP -->
   <div id="appScreen" class="app-screen hidden">
+
     <header>
       <div class="logo">FUERZA <span>PRO</span></div>
       <div class="header-right">
         <span class="user-badge" id="userBadge">👤</span>
-        <button class="header-btn" onclick="openModal()">+ Agregar ejercicio</button>
+        <button class="header-btn" id="btnAgregar" onclick="openModal()">+ Ejercicio</button>
         <button class="logout-btn" onclick="handleLogout()">⏏ Salir</button>
       </div>
     </header>
 
-    <nav class="days-nav" id="daysNav"></nav>
+    <!-- TABS -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" id="tabRutina"   onclick="switchTab('rutina')">🏋️ Rutina</button>
+      <button class="tab-btn"        id="tabProgreso" onclick="switchTab('progreso')">📊 Progreso</button>
+      <button class="tab-btn"        id="tabCiclo"    onclick="switchTab('ciclo')">📅 Ciclo</button>
+    </div>
 
-    <main class="main">
-      <div class="week-progress">
-        <span class="progress-label">Semana completada</span>
-        <div class="progress-bar-wrap">
-          <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+    <!-- PANEL RUTINA -->
+    <div id="panelRutina">
+      <nav class="days-nav" id="daysNav"></nav>
+      <main class="main">
+        <div class="week-progress">
+          <span class="progress-label">Semana completada</span>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+          </div>
+          <span class="progress-pct" id="progressPct">0%</span>
         </div>
-        <span class="progress-pct" id="progressPct">0%</span>
-      </div>
-      <div class="section-header">
-        <div class="section-title" id="sectionTitle">LUNES</div>
-      </div>
-      <div id="exercisesList"></div>
-    </main>
-  </div>
+        <div class="section-header">
+          <div class="section-title" id="sectionTitle">LUNES</div>
+        </div>
+        <div id="exercisesList"></div>
+      </main>
+    </div>
 
-  <!-- MODAL -->
+    <!-- PANEL PROGRESO -->
+    <div id="panelProgreso" class="hidden">
+      <main class="main">
+        <div class="section-header">
+          <div class="section-title">MI <span style="color:var(--accent)">PROGRESO</span></div>
+          <button class="header-btn" onclick="openStatsModal()">+ Medición</button>
+        </div>
+        <div class="stats-summary" id="statsSummary"></div>
+        <div class="chart-section">
+          <div class="chart-tabs">
+            <button class="chart-tab active" onclick="switchChart('peso')">Peso</button>
+            <button class="chart-tab" onclick="switchChart('grasa')">Grasa</button>
+            <button class="chart-tab" onclick="switchChart('musculo')">Músculo</button>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="progressChart"></canvas>
+            <div class="chart-empty" id="chartEmpty">
+              <span>📈</span>
+              <p>Agrega al menos 2 mediciones para ver la gráfica</p>
+            </div>
+          </div>
+        </div>
+        <div class="stats-history-title">Historial</div>
+        <div id="statsHistory"></div>
+      </main>
+    </div>
+
+    <!-- PANEL CICLO -->
+    <div id="panelCiclo" class="hidden">
+      <main class="main">
+        <div class="section-header">
+          <div class="section-title">CICLO DE <span style="color:var(--accent)">ENTRENAMIENTO</span></div>
+        </div>
+
+        <!-- Countdown principal -->
+        <div class="cycle-hero" id="cycleHero">
+          <!-- Se genera desde JS -->
+        </div>
+
+        <!-- Configurar ciclo -->
+        <div class="cycle-config" id="cycleConfig">
+          <div class="cycle-config-title">⚙️ Configurar ciclo</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Fecha de inicio</label>
+              <input class="form-input" id="cycleStart" type="date" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fecha de fin</label>
+              <input class="form-input" id="cycleEnd" type="date" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nombre del ciclo (opcional)</label>
+            <input class="form-input" id="cycleName" placeholder="Ej: Volumen, Definición, Fuerza..." />
+          </div>
+          <button class="btn-submit" onclick="saveCycle()">Guardar ciclo 📅</button>
+        </div>
+
+      </main>
+    </div>
+
+  </div><!-- fin appScreen -->
+
+
+  <!-- MODAL EJERCICIO -->
   <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
     <div class="modal">
       <div class="modal-header">
@@ -65,7 +139,7 @@
       <div class="modal-body">
         <div class="form-group">
           <label class="form-label">Nombre del ejercicio *</label>
-          <input class="form-input" id="fName" placeholder="Ej: Press de banca, Sentadilla..." />
+          <input class="form-input" id="fName" placeholder="Ej: Press de banca..." />
         </div>
         <div class="form-group">
           <label class="form-label">Día de la semana *</label>
@@ -79,7 +153,7 @@
             <option value="Domingo">Domingo</option>
           </select>
         </div>
-        <div class="form-row">
+        <div class="form-row-3">
           <div class="form-group">
             <label class="form-label">Series</label>
             <input class="form-input" id="fSets" type="number" min="1" max="20" placeholder="3" />
@@ -93,6 +167,14 @@
             <input class="form-input" id="fRest" placeholder="60s" />
           </div>
         </div>
+
+        <!-- PESO DEL EJERCICIO — se guarda y no se borra -->
+        <div class="form-group">
+          <label class="form-label">Peso que usas (kg)</label>
+          <input class="form-input" id="fWeight" type="number" step="0.5" placeholder="Ej: 40" />
+          <div class="form-hint">Este dato se guarda permanentemente para que veas tu progreso semana a semana 💪</div>
+        </div>
+
         <div class="form-group">
           <label class="form-label">Grupo muscular</label>
           <select class="form-select" id="fMuscle">
@@ -109,15 +191,24 @@
             <option value="🤸 Cuerpo completo">🤸 Cuerpo completo</option>
           </select>
         </div>
+
+        <!-- GIF — con instrucciones claras -->
         <div class="form-group">
-          <label class="form-label">URL del GIF / imagen</label>
-          <input class="form-input" id="fGif" placeholder="https://..." oninput="previewGif()" />
-          <div class="form-hint">Busca GIFs gratis en <strong>giphy.com</strong> o <strong>tenor.com</strong></div>
-          <div class="gif-error" id="gifError">⚠ No se pudo cargar la imagen</div>
+          <label class="form-label">GIF del ejercicio</label>
+          <input class="form-input" id="fGif" placeholder="Pega aquí el link directo del GIF..." />
+          <div class="form-hint">
+            📌 Cómo obtener el link correcto:<br>
+            1. Ve a <strong>giphy.com</strong>, busca el ejercicio<br>
+            2. Abre el GIF y clic en <strong>"Share"</strong> → <strong>"Copy Link"</strong><br>
+            3. Pégalo aquí — debe terminar en <strong>.gif</strong>
+          </div>
+          <button class="btn-preview-gif" onclick="previewGif()">👁 Ver preview</button>
+          <div class="gif-error" id="gifError">⚠ No se pudo cargar. Asegúrate que el link termine en .gif</div>
           <div class="gif-preview" id="gifPreview">
-            <span style="color: var(--muted); font-size: 0.85rem;">Vista previa del GIF</span>
+            <span style="color:var(--muted);font-size:0.85rem;">Preview del GIF aparecerá aquí</span>
           </div>
         </div>
+
         <div class="form-group">
           <label class="form-label">Notas / cómo se hace</label>
           <textarea class="form-textarea" id="fNotes" placeholder="Ej: Mantén la espalda recta..."></textarea>
@@ -127,6 +218,66 @@
     </div>
   </div>
 
+  <!-- MODAL EDITAR PESO -->
+  <div class="overlay" id="weightOverlay" onclick="handleWeightOverlayClick(event)">
+    <div class="modal" style="max-width:360px">
+      <div class="modal-header">
+        <span class="modal-title" id="weightModalTitle">Actualizar peso</span>
+        <button class="modal-close" onclick="closeWeightModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Nuevo peso (kg)</label>
+          <input class="form-input" id="wNewWeight" type="number" step="0.5" placeholder="Ej: 42.5" />
+        </div>
+        <div class="weight-history-wrap" id="weightHistoryWrap"></div>
+        <button class="btn-submit" onclick="saveWeight()">Actualizar peso ⚖️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MEDICIÓN CORPORAL -->
+  <div class="overlay" id="statsOverlay" onclick="handleStatsOverlayClick(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Nueva Medición</span>
+        <button class="modal-close" onclick="closeStatsModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Fecha</label>
+          <input class="form-input" id="sDate" type="date" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Peso (kg)</label>
+            <input class="form-input" id="sPeso" type="number" step="0.1" placeholder="70.5" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Estatura (cm)</label>
+            <input class="form-input" id="sEstatura" type="number" step="0.1" placeholder="175" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Grasa (%)</label>
+            <input class="form-input" id="sGrasa" type="number" step="0.1" placeholder="18.0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Músculo (%)</label>
+            <input class="form-input" id="sMusculo" type="number" step="0.1" placeholder="42.0" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notas (opcional)</label>
+          <textarea class="form-textarea" id="sNotes" placeholder="Ej: Después de 2 meses..."></textarea>
+        </div>
+        <button class="btn-submit" onclick="saveStat()">Guardar medición 📊</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>
