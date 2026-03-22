@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FUERZA PRO — Rutina Semanal</title>
+
+  <!-- Fuentes de Google -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- =============================================
+       PANTALLA DE LOGIN
+       Se muestra al entrar o al cerrar sesión
+  ============================================= -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-box">
+
+      <!-- Logo -->
+      <div class="login-logo">FUERZA <span>PRO</span></div>
+      <p class="login-subtitle">Inicia sesión para ver tu rutina</p>
+
+      <!-- Formulario de login -->
+      <div class="form-group">
+        <label class="form-label">Usuario</label>
+        <input class="form-input" id="loginUser" placeholder="Tu usuario..." />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" id="loginPass" type="password" placeholder="Tu contraseña..." />
+      </div>
+
+      <!-- Mensaje de error -->
+      <div class="login-error" id="loginError">⚠ Usuario o contraseña incorrectos</div>
+
+      <button class="btn-submit" onclick="handleLogin()">Entrar 💪</button>
+
+    </div>
+  </div>
+
+
+  <!-- =============================================
+       PANTALLA PRINCIPAL (App)
+       Se muestra después del login
+  ============================================= -->
+  <div id="appScreen" class="app-screen hidden">
+
+    <!-- HEADER -->
+    <header>
+      <div class="logo">FUERZA <span>PRO</span></div>
+      <div class="header-right">
+        <!-- Muestra el nombre del usuario activo -->
+        <span class="user-badge" id="userBadge">👤 jhoao</span>
+        <button class="header-btn" onclick="openModal()">+ Agregar ejercicio</button>
+        <!-- Botón para cerrar sesión -->
+        <button class="logout-btn" onclick="handleLogout()" title="Cerrar sesión">⏏ Salir</button>
+      </div>
+    </header>
+
+    <!-- NAVEGACIÓN DE DÍAS -->
+    <nav class="days-nav" id="daysNav"></nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main">
+
+      <!-- Barra de progreso semanal -->
+      <div class="week-progress">
+        <span class="progress-label">Semana completada</span>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+
+      <!-- Título del día -->
+      <div class="section-header">
+        <div class="section-title" id="sectionTitle">LUNES</div>
+      </div>
+
+      <!-- Tarjetas de ejercicios -->
+      <div id="exercisesList"></div>
+
+    </main>
+
+  </div><!-- fin appScreen -->
+
+
+  <!-- =============================================
+       MODAL — Formulario agregar ejercicio
+  ============================================= -->
+  <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+    <div class="modal">
+
+      <div class="modal-header">
+        <span class="modal-title">Nuevo Ejercicio</span>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="form-group">
+          <label class="form-label">Nombre del ejercicio *</label>
+          <input class="form-input" id="fName" placeholder="Ej: Press de banca, Sentadilla..." />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Día de la semana *</label>
+          <select class="form-select" id="fDay">
+            <option value="Lunes">Lunes</option>
+            <option value="Martes">Martes</option>
+            <option value="Miércoles">Miércoles</option>
+            <option value="Jueves">Jueves</option>
+            <option value="Viernes">Viernes</option>
+            <option value="Sábado">Sábado</option>
+            <option value="Domingo">Domingo</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Series</label>
+            <input class="form-input" id="fSets" type="number" min="1" max="20" placeholder="3" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Reps</label>
+            <input class="form-input" id="fReps" type="number" min="1" max="100" placeholder="12" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descanso</label>
+            <input class="form-input" id="fRest" placeholder="60s" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Grupo muscular</label>
+          <select class="form-select" id="fMuscle">
+            <option value="">— Seleccionar —</option>
+            <option value="💪 Bíceps">💪 Bíceps</option>
+            <option value="🏋️ Tríceps">🏋️ Tríceps</option>
+            <option value="🫁 Pecho">🫁 Pecho</option>
+            <option value="🔙 Espalda">🔙 Espalda</option>
+            <option value="🦵 Piernas">🦵 Piernas</option>
+            <option value="🍑 Glúteos">🍑 Glúteos</option>
+            <option value="🧱 Hombros">🧱 Hombros</option>
+            <option value="🎯 Core / Abdomen">🎯 Core / Abdomen</option>
+            <option value="🏃 Cardio">🏃 Cardio</option>
+            <option value="🤸 Cuerpo completo">🤸 Cuerpo completo</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">URL del GIF / imagen</label>
+          <input class="form-input" id="fGif" placeholder="https://..." oninput="previewGif()" />
+          <div class="form-hint">
+            Busca GIFs gratis en <strong>giphy.com</strong> o <strong>tenor.com</strong> — copia el link directo
+          </div>
+          <div class="gif-error" id="gifError">⚠ No se pudo cargar la imagen, verifica el link</div>
+          <div class="gif-preview" id="gifPreview">
+            <span style="color: var(--muted); font-size: 0.85rem;">Vista previa del GIF</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notas / cómo se hace</label>
+          <textarea
+            class="form-textarea"
+            id="fNotes"
+            placeholder="Ej: Mantén la espalda recta, baja lento en 3 segundos..."
+          ></textarea>
+        </div>
+
+        <button class="btn-submit" onclick="saveExercise()">Guardar ejercicio 💪</button>
+
+      </div>
+    </div>
+  </div>
+
+
+  <script src="app.js"></script>
+</body>
+</html>
