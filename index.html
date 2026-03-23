@@ -1,283 +1,363 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FUERZA PRO — Rutina Semanal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>FUERZA PRO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
 
-  <!-- LOGIN -->
-  <div id="loginScreen" class="login-screen">
-    <div class="login-box">
-      <div class="login-logo">FUERZA <span>PRO</span></div>
-      <p class="login-subtitle">Inicia sesión para ver tu rutina</p>
-      <div class="form-group">
-        <label class="form-label">Usuario</label>
-        <input class="form-input" id="loginUser" placeholder="Tu usuario..." />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Contraseña</label>
-        <input class="form-input" id="loginPass" type="password" placeholder="Tu contraseña..." />
-      </div>
+<!-- ═══════════════ LOGIN / REGISTRO ═══════════════ -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="login-logo">FUERZA <span>PRO</span></div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="authTabLogin"    onclick="switchAuth('login')">Iniciar sesión</button>
+      <button class="auth-tab"        id="authTabRegister" onclick="switchAuth('register')">Registrarse</button>
+    </div>
+    <div id="loginForm">
+      <div class="form-group"><label class="form-label">Usuario</label><input class="form-input" id="loginUser" placeholder="Tu usuario..."/></div>
+      <div class="form-group"><label class="form-label">Contraseña</label><input class="form-input" id="loginPass" type="password" placeholder="Tu contraseña..."/></div>
       <div class="login-error" id="loginError">⚠ Usuario o contraseña incorrectos</div>
       <button class="btn-submit" onclick="handleLogin()">Entrar 💪</button>
     </div>
+    <div id="registerForm" class="hidden">
+      <div class="form-group"><label class="form-label">Nombre de usuario *</label><input class="form-input" id="regUser" placeholder="Ej: ana, carlos..."/></div>
+      <div class="form-group"><label class="form-label">Contraseña *</label><input class="form-input" id="regPass" type="password" placeholder="Mínimo 4 caracteres..."/></div>
+      <div class="form-group"><label class="form-label">Confirmar contraseña *</label><input class="form-input" id="regPass2" type="password" placeholder="Repite tu contraseña..."/></div>
+      <div class="login-error" id="registerError"></div>
+      <button class="btn-submit" onclick="handleRegister()">Crear cuenta 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP ═══════════════ -->
+<div id="appScreen" class="app-screen hidden">
+  <header>
+    <div class="logo">FUERZA <span>PRO</span></div>
+    <div class="header-right">
+      <span class="user-badge" id="userBadge">👤</span>
+      <button class="header-btn admin-only hidden" id="btnAgregar"   onclick="openModal()">+ Ejercicio</button>
+      <button class="header-btn admin-only hidden" id="btnResetWeek" onclick="confirmResetWeek()">🔄 Reset</button>
+      <button class="logout-btn" onclick="handleLogout()">⏏ Salir</button>
+    </div>
+  </header>
+
+  <div class="tabs-nav">
+    <button class="tab-btn active" id="tabRutina"   onclick="switchTab('rutina')">🏋️ Rutina</button>
+    <button class="tab-btn"        id="tabDieta"    onclick="switchTab('dieta')">🥗 Dieta</button>
+    <button class="tab-btn"        id="tabProgreso" onclick="switchTab('progreso')">📊 Progreso</button>
+    <button class="tab-btn"        id="tabCiclo"    onclick="switchTab('ciclo')">📅 Ciclo</button>
+    <button class="tab-btn admin-only hidden" id="tabAdmin" onclick="switchTab('admin')">⚙️ Admin</button>
   </div>
 
-  <!-- APP -->
-  <div id="appScreen" class="app-screen hidden">
-
-    <header>
-      <div class="logo">FUERZA <span>PRO</span></div>
-      <div class="header-right">
-        <span class="user-badge" id="userBadge">👤</span>
-        <button class="header-btn" id="btnAgregar" onclick="openModal()">+ Ejercicio</button>
-        <button class="logout-btn" onclick="handleLogout()">⏏ Salir</button>
+  <!-- ── RUTINA ── -->
+  <div id="panelRutina">
+    <nav class="days-nav" id="daysNav"></nav>
+    <main class="main">
+      <div class="week-progress">
+        <span class="progress-label">Semana completada</span>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+        <span class="progress-pct" id="progressPct">0%</span>
       </div>
-    </header>
+      <div class="section-header">
+        <div class="section-title" id="sectionTitle">LUNES</div>
+      </div>
+      <div id="exercisesList"></div>
+    </main>
+  </div>
 
-    <!-- TABS -->
-    <div class="tabs-nav">
-      <button class="tab-btn active" id="tabRutina"   onclick="switchTab('rutina')">🏋️ Rutina</button>
-      <button class="tab-btn"        id="tabProgreso" onclick="switchTab('progreso')">📊 Progreso</button>
-      <button class="tab-btn"        id="tabCiclo"    onclick="switchTab('ciclo')">📅 Ciclo</button>
-    </div>
+  <!-- ── DIETA ── -->
+  <div id="panelDieta" class="hidden">
+    <nav class="days-nav" id="dietDaysNav"></nav>
+    <main class="main">
+      <div class="section-header">
+        <div class="section-title" id="dietSectionTitle">LUNES</div>
+        <button class="header-btn admin-only hidden" id="btnAddMeal" onclick="openMealModal()">+ Agregar comida</button>
+      </div>
+      <div id="dietContent"></div>
+    </main>
+  </div>
 
-    <!-- PANEL RUTINA -->
-    <div id="panelRutina">
-      <nav class="days-nav" id="daysNav"></nav>
-      <main class="main">
-        <div class="week-progress">
-          <span class="progress-label">Semana completada</span>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
-          </div>
-          <span class="progress-pct" id="progressPct">0%</span>
-        </div>
-        <div class="section-header">
-          <div class="section-title" id="sectionTitle">LUNES</div>
-        </div>
-        <div id="exercisesList"></div>
-      </main>
-    </div>
+  <!-- ── PROGRESO ── -->
+  <div id="panelProgreso" class="hidden">
+    <main class="main">
+      <div class="progress-subtabs">
+        <button class="pstab active" id="pstabComp"    onclick="switchProgressTab('comp')">🧬 Composición</button>
+        <button class="pstab"        id="pstabMedidas" onclick="switchProgressTab('medidas')">📐 Medidas</button>
+        <button class="pstab"        id="pstabGraficas" onclick="switchProgressTab('graficas')">📈 Gráficas</button>
+      </div>
 
-    <!-- PANEL PROGRESO -->
-    <div id="panelProgreso" class="hidden">
-      <main class="main">
-        <div class="section-header">
-          <div class="section-title">MI <span style="color:var(--accent)">PROGRESO</span></div>
-          <button class="header-btn" onclick="openStatsModal()">+ Medición</button>
+      <!-- Composición corporal -->
+      <div id="ppComp">
+        <div class="section-header" style="margin-top:24px">
+          <div class="section-title" style="font-size:1.5rem">COMPOSICIÓN <span style="color:var(--accent)">CORPORAL</span></div>
+          <button class="header-btn" onclick="openBodyModal()">+ Registro</button>
         </div>
-        <div class="stats-summary" id="statsSummary"></div>
+        <div id="bodyLatest"></div>
+        <div id="bodyHistory"></div>
+      </div>
+
+      <!-- Medidas corporales -->
+      <div id="ppMedidas" class="hidden">
+        <div class="section-header" style="margin-top:24px">
+          <div class="section-title" style="font-size:1.5rem">MEDIDAS <span style="color:var(--accent)">CORPORALES</span></div>
+          <button class="header-btn" onclick="openMedidasModal()">+ Registro</button>
+        </div>
+        <div id="medidasLatest"></div>
+        <div id="medidasHistory"></div>
+      </div>
+
+      <!-- Gráficas -->
+      <div id="ppGraficas" class="hidden">
+        <div class="section-header" style="margin-top:24px">
+          <div class="section-title" style="font-size:1.5rem">GRÁFICAS DE <span style="color:var(--accent)">PROGRESO</span></div>
+        </div>
         <div class="chart-section">
-          <div class="chart-tabs">
-            <button class="chart-tab active" onclick="switchChart('peso')">Peso</button>
-            <button class="chart-tab" onclick="switchChart('grasa')">Grasa</button>
-            <button class="chart-tab" onclick="switchChart('musculo')">Músculo</button>
+          <div class="chart-subtabs" id="chartSubtabs">
+            <button class="csub active" onclick="switchBodyChart('peso')">Peso</button>
+            <button class="csub" onclick="switchBodyChart('grasa')">Grasa</button>
+            <button class="csub" onclick="switchBodyChart('musculo')">Músculo</button>
+            <button class="csub" onclick="switchBodyChart('agua')">Agua</button>
           </div>
-          <div class="chart-wrap">
-            <canvas id="progressChart"></canvas>
-            <div class="chart-empty" id="chartEmpty">
-              <span>📈</span>
-              <p>Agrega al menos 2 mediciones para ver la gráfica</p>
-            </div>
-          </div>
+          <div class="chart-wrap"><canvas id="bodyChart"></canvas><div class="chart-empty" id="bodyChartEmpty"><span>📈</span><p>Agrega 2+ registros para ver la gráfica</p></div></div>
         </div>
-        <div class="stats-history-title">Historial</div>
-        <div id="statsHistory"></div>
-      </main>
-    </div>
-
-    <!-- PANEL CICLO -->
-    <div id="panelCiclo" class="hidden">
-      <main class="main">
-        <div class="section-header">
-          <div class="section-title">CICLO DE <span style="color:var(--accent)">ENTRENAMIENTO</span></div>
+        <div class="section-title" style="font-size:1.3rem;margin:24px 0 16px">PESO POR <span style="color:var(--accent)">EJERCICIO</span></div>
+        <div id="weightChartSection"></div>
+        <div class="section-title" style="font-size:1.3rem;margin:24px 0 16px">MEDIDAS <span style="color:var(--accent)">CORPORALES</span></div>
+        <div class="chart-section">
+          <div class="chart-subtabs" id="medidasChartTabs"></div>
+          <div class="chart-wrap"><canvas id="medidasChart"></canvas><div class="chart-empty" id="medidasChartEmpty"><span>📐</span><p>Agrega 2+ registros de medidas para ver la gráfica</p></div></div>
         </div>
-
-        <!-- Countdown principal -->
-        <div class="cycle-hero" id="cycleHero">
-          <!-- Se genera desde JS -->
-        </div>
-
-        <!-- Configurar ciclo -->
-        <div class="cycle-config" id="cycleConfig">
-          <div class="cycle-config-title">⚙️ Configurar ciclo</div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Fecha de inicio</label>
-              <input class="form-input" id="cycleStart" type="date" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Fecha de fin</label>
-              <input class="form-input" id="cycleEnd" type="date" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Nombre del ciclo (opcional)</label>
-            <input class="form-input" id="cycleName" placeholder="Ej: Volumen, Definición, Fuerza..." />
-          </div>
-          <button class="btn-submit" onclick="saveCycle()">Guardar ciclo 📅</button>
-        </div>
-
-      </main>
-    </div>
-
-  </div><!-- fin appScreen -->
-
-
-  <!-- MODAL EJERCICIO -->
-  <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
-    <div class="modal">
-      <div class="modal-header">
-        <span class="modal-title">Nuevo Ejercicio</span>
-        <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Nombre del ejercicio *</label>
-          <input class="form-input" id="fName" placeholder="Ej: Press de banca..." />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Día de la semana *</label>
-          <select class="form-select" id="fDay">
-            <option value="Lunes">Lunes</option>
-            <option value="Martes">Martes</option>
-            <option value="Miércoles">Miércoles</option>
-            <option value="Jueves">Jueves</option>
-            <option value="Viernes">Viernes</option>
-            <option value="Sábado">Sábado</option>
-            <option value="Domingo">Domingo</option>
-          </select>
-        </div>
-        <div class="form-row-3">
-          <div class="form-group">
-            <label class="form-label">Series</label>
-            <input class="form-input" id="fSets" type="number" min="1" max="20" placeholder="3" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Reps</label>
-            <input class="form-input" id="fReps" type="number" min="1" max="100" placeholder="12" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Descanso</label>
-            <input class="form-input" id="fRest" placeholder="60s" />
-          </div>
-        </div>
+    </main>
+  </div>
 
-        <!-- PESO DEL EJERCICIO — se guarda y no se borra -->
-        <div class="form-group">
-          <label class="form-label">Peso que usas (kg)</label>
-          <input class="form-input" id="fWeight" type="number" step="0.5" placeholder="Ej: 40" />
-          <div class="form-hint">Este dato se guarda permanentemente para que veas tu progreso semana a semana 💪</div>
+  <!-- ── CICLO ── -->
+  <div id="panelCiclo" class="hidden">
+    <main class="main">
+      <div class="section-header"><div class="section-title">CICLO DE <span style="color:var(--accent)">ENTRENAMIENTO</span></div></div>
+      <div class="cycle-hero" id="cycleHero"></div>
+      <div class="cycle-config admin-only hidden" id="cycleConfig">
+        <div class="cycle-config-title">⚙️ Configurar ciclo</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Fecha inicio</label><input class="form-input" id="cycleStart" type="date"/></div>
+          <div class="form-group"><label class="form-label">Fecha fin</label><input class="form-input" id="cycleEnd" type="date"/></div>
         </div>
+        <div class="form-group"><label class="form-label">Nombre del ciclo</label><input class="form-input" id="cycleName" placeholder="Ej: Volumen, Definición..."/></div>
+        <button class="btn-submit" onclick="saveCycle()">Guardar ciclo 📅</button>
+      </div>
+    </main>
+  </div>
 
+  <!-- ── ADMIN ── -->
+  <div id="panelAdmin" class="hidden">
+    <main class="main">
+      <div class="section-header"><div class="section-title">PANEL <span style="color:var(--accent)">ADMIN</span></div></div>
+      <div class="admin-section-title">👥 Usuarios registrados</div>
+      <div id="usersList"></div>
+      <div class="admin-section-title" style="margin-top:28px">📋 Gestionar rutinas</div>
+      <div class="form-row" style="margin-bottom:16px">
         <div class="form-group">
-          <label class="form-label">Grupo muscular</label>
-          <select class="form-select" id="fMuscle">
+          <label class="form-label">Ver perfil de usuario</label>
+          <select class="form-select" id="adminViewUser" onchange="adminLoadUser()">
             <option value="">— Seleccionar —</option>
-            <option value="💪 Bíceps">💪 Bíceps</option>
-            <option value="🏋️ Tríceps">🏋️ Tríceps</option>
-            <option value="🫁 Pecho">🫁 Pecho</option>
-            <option value="🔙 Espalda">🔙 Espalda</option>
-            <option value="🦵 Piernas">🦵 Piernas</option>
-            <option value="🍑 Glúteos">🍑 Glúteos</option>
-            <option value="🧱 Hombros">🧱 Hombros</option>
-            <option value="🎯 Core / Abdomen">🎯 Core / Abdomen</option>
-            <option value="🏃 Cardio">🏃 Cardio</option>
-            <option value="🤸 Cuerpo completo">🤸 Cuerpo completo</option>
           </select>
         </div>
-
-        <!-- GIF — con instrucciones claras -->
-        <div class="form-group">
-          <label class="form-label">GIF del ejercicio</label>
-          <input class="form-input" id="fGif" placeholder="Pega aquí el link directo del GIF..." />
-          <div class="form-hint">
-            📌 Cómo obtener el link correcto:<br>
-            1. Ve a <strong>giphy.com</strong>, busca el ejercicio<br>
-            2. Abre el GIF y clic en <strong>"Share"</strong> → <strong>"Copy Link"</strong><br>
-            3. Pégalo aquí — debe terminar en <strong>.gif</strong>
-          </div>
-          <button class="btn-preview-gif" onclick="previewGif()">👁 Ver preview</button>
-          <div class="gif-error" id="gifError">⚠ No se pudo cargar. Asegúrate que el link termine en .gif</div>
-          <div class="gif-preview" id="gifPreview">
-            <span style="color:var(--muted);font-size:0.85rem;">Preview del GIF aparecerá aquí</span>
-          </div>
+        <div class="form-group" style="display:flex;align-items:flex-end">
+          <button class="btn-submit" style="margin-top:0" onclick="openCopyRoutine()">📋 Copiar rutina</button>
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Notas / cómo se hace</label>
-          <textarea class="form-textarea" id="fNotes" placeholder="Ej: Mantén la espalda recta..."></textarea>
-        </div>
-        <button class="btn-submit" onclick="saveExercise()">Guardar ejercicio 💪</button>
       </div>
+      <div id="adminUserPanel"></div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════ MODAL EJERCICIO ═══════ -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="exerciseModalTitle">Nuevo Ejercicio</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nombre *</label><input class="form-input" id="fName" placeholder="Ej: Press de banca..."/></div>
+      <div class="form-group">
+        <label class="form-label">Día *</label>
+        <select class="form-select" id="fDay">
+          <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+          <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
+        </select>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group"><label class="form-label">Series</label><input class="form-input" id="fSets" type="number" min="1" placeholder="3"/></div>
+        <div class="form-group"><label class="form-label">Reps</label><input class="form-input" id="fReps" type="number" min="1" placeholder="12"/></div>
+        <div class="form-group"><label class="form-label">Descanso</label><input class="form-input" id="fRest" placeholder="60s"/></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Peso inicial (kg)</label>
+        <input class="form-input" id="fWeight" type="number" step="0.5" placeholder="Ej: 40"/>
+        <div class="form-hint">Se guarda historial semana a semana 💪</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Grupo muscular</label>
+        <select class="form-select" id="fMuscle">
+          <option value="">— Seleccionar —</option>
+          <option>💪 Bíceps</option><option>🏋️ Tríceps</option><option>🫁 Pecho</option>
+          <option>🔙 Espalda</option><option>🦵 Piernas</option><option>🍑 Glúteos</option>
+          <option>🧱 Hombros</option><option>🎯 Core / Abdomen</option><option>🏃 Cardio</option><option>🤸 Cuerpo completo</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">GIF del ejercicio</label>
+        <input class="form-input" id="fGif" placeholder="Pega el link del GIF aquí..."/>
+        <div class="form-hint">📌 giphy.com → busca → Share → Copy Link → pega aquí</div>
+        <button class="btn-preview-gif" onclick="previewGif()">👁 Ver preview</button>
+        <div class="gif-error" id="gifError">⚠ No se pudo cargar. Verifica el link.</div>
+        <div class="gif-preview" id="gifPreview"><span style="color:var(--muted);font-size:0.85rem">Preview aquí</span></div>
+      </div>
+      <div class="form-group"><label class="form-label">Notas</label><textarea class="form-textarea" id="fNotes" placeholder="Técnica, consejos..."></textarea></div>
+      <input type="hidden" id="fEditId"/>
+      <input type="hidden" id="fTargetUser"/>
+      <button class="btn-submit" onclick="saveExercise()">Guardar ejercicio 💪</button>
     </div>
   </div>
+</div>
 
-  <!-- MODAL EDITAR PESO -->
-  <div class="overlay" id="weightOverlay" onclick="handleWeightOverlayClick(event)">
-    <div class="modal" style="max-width:360px">
-      <div class="modal-header">
-        <span class="modal-title" id="weightModalTitle">Actualizar peso</span>
-        <button class="modal-close" onclick="closeWeightModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Nuevo peso (kg)</label>
-          <input class="form-input" id="wNewWeight" type="number" step="0.5" placeholder="Ej: 42.5" />
-        </div>
-        <div class="weight-history-wrap" id="weightHistoryWrap"></div>
-        <button class="btn-submit" onclick="saveWeight()">Actualizar peso ⚖️</button>
-      </div>
+<!-- ═══════ MODAL PESO ═══════ -->
+<div class="overlay" id="weightOverlay" onclick="if(event.target===this)closeWeightModal()">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <span class="modal-title" id="weightModalTitle">Actualizar peso</span>
+      <button class="modal-close" onclick="closeWeightModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nuevo peso (kg)</label><input class="form-input" id="wNewWeight" type="number" step="0.5" placeholder="Ej: 42.5"/></div>
+      <div id="weightHistoryWrap"></div>
+      <button class="btn-submit" onclick="saveWeight()">Guardar peso ⚖️</button>
     </div>
   </div>
+</div>
 
-  <!-- MODAL MEDICIÓN CORPORAL -->
-  <div class="overlay" id="statsOverlay" onclick="handleStatsOverlayClick(event)">
-    <div class="modal">
-      <div class="modal-header">
-        <span class="modal-title">Nueva Medición</span>
-        <button class="modal-close" onclick="closeStatsModal()">✕</button>
+<!-- ═══════ MODAL COMIDA ═══════ -->
+<div class="overlay" id="mealOverlay" onclick="if(event.target===this)closeMealModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="mealModalTitle">Nueva Comida</span>
+      <button class="modal-close" onclick="closeMealModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Tiempo de comida *</label>
+        <select class="form-select" id="mealTime">
+          <option value="Desayuno">🌅 Desayuno</option>
+          <option value="Almuerzo">☀️ Almuerzo</option>
+          <option value="Merienda">🍎 Merienda</option>
+          <option value="Cena">🌙 Cena</option>
+        </select>
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Fecha</label>
-          <input class="form-input" id="sDate" type="date" />
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Peso (kg)</label>
-            <input class="form-input" id="sPeso" type="number" step="0.1" placeholder="70.5" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Estatura (cm)</label>
-            <input class="form-input" id="sEstatura" type="number" step="0.1" placeholder="175" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Grasa (%)</label>
-            <input class="form-input" id="sGrasa" type="number" step="0.1" placeholder="18.0" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Músculo (%)</label>
-            <input class="form-input" id="sMusculo" type="number" step="0.1" placeholder="42.0" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Notas (opcional)</label>
-          <textarea class="form-textarea" id="sNotes" placeholder="Ej: Después de 2 meses..."></textarea>
-        </div>
-        <button class="btn-submit" onclick="saveStat()">Guardar medición 📊</button>
+      <div class="form-group"><label class="form-label">Día *</label>
+        <select class="form-select" id="mealDay">
+          <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+          <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
+        </select>
       </div>
+      <div class="form-group"><label class="form-label">Alimento *</label><input class="form-input" id="mealName" placeholder="Ej: Pollo a la plancha..."/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Cantidad</label><input class="form-input" id="mealQty" placeholder="Ej: 150g, 1 taza..."/></div>
+        <div class="form-group"><label class="form-label">Calorías (kcal)</label><input class="form-input" id="mealCal" type="number" placeholder="250"/></div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group"><label class="form-label">Proteína (g)</label><input class="form-input" id="mealProt" type="number" step="0.1" placeholder="30"/></div>
+        <div class="form-group"><label class="form-label">Carbs (g)</label><input class="form-input" id="mealCarbs" type="number" step="0.1" placeholder="20"/></div>
+        <div class="form-group"><label class="form-label">Grasas (g)</label><input class="form-input" id="mealFat" type="number" step="0.1" placeholder="8"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Notas</label><textarea class="form-textarea" id="mealNotes" placeholder="Preparación, sustitutos..."></textarea></div>
+      <input type="hidden" id="mealEditId"/>
+      <input type="hidden" id="mealTargetUser"/>
+      <button class="btn-submit" onclick="saveMeal()">Guardar comida 🥗</button>
     </div>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script type="module" src="app.js"></script>
+<!-- ═══════ MODAL COMPOSICIÓN CORPORAL ═══════ -->
+<div class="overlay" id="bodyOverlay" onclick="if(event.target===this)closeBodyModal()">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Composición Corporal</span><button class="modal-close" onclick="closeBodyModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" id="bDate" type="date"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Edad</label><input class="form-input" id="bEdad" type="number" placeholder="25"/></div>
+        <div class="form-group"><label class="form-label">Estatura (cm)</label><input class="form-input" id="bEstatura" type="number" step="0.1" placeholder="175"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Peso (kg)</label><input class="form-input" id="bPeso" type="number" step="0.1" placeholder="70"/></div>
+        <div class="form-group"><label class="form-label">Agua corporal (%)</label><input class="form-input" id="bAgua" type="number" step="0.1" placeholder="55"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Grasa corporal (%)</label><input class="form-input" id="bGrasa" type="number" step="0.1" placeholder="18"/></div>
+        <div class="form-group"><label class="form-label">Masa ósea (kg)</label><input class="form-input" id="bHueso" type="number" step="0.1" placeholder="3.2"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Grasa visceral (1-20)</label><input class="form-input" id="bVisceral" type="number" step="0.1" placeholder="8"/></div>
+        <div class="form-group"><label class="form-label">Masa muscular (%)</label><input class="form-input" id="bMusculo" type="number" step="0.1" placeholder="42"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">BMI <span style="font-weight:300">(auto)</span></label><input class="form-input" id="bBMI" type="number" step="0.1" placeholder="Se calcula solo"/></div>
+        <div class="form-group"><label class="form-label">BMR kcal <span style="font-weight:300">(auto)</span></label><input class="form-input" id="bBMR" type="number" placeholder="Se calcula solo"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Edad fisiológica</label><input class="form-input" id="bEdadFisio" type="number" placeholder="Ej: 28"/></div>
+      <div class="form-hint" style="margin-bottom:14px">💡 BMI y BMR se calculan automáticamente con peso y estatura si los dejas vacíos</div>
+      <button class="btn-submit" onclick="saveBody()">Guardar 🧬</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ MODAL MEDIDAS ═══════ -->
+<div class="overlay" id="medidasOverlay" onclick="if(event.target===this)closeMedidasModal()">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Medidas Corporales</span><button class="modal-close" onclick="closeMedidasModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" id="mDate" type="date"/></div>
+      <div class="medidas-grid">
+        <div class="form-group"><label class="form-label">Cuello (cm)</label><input class="form-input" id="mCuello" type="number" step="0.1" placeholder="38"/></div>
+        <div class="form-group"><label class="form-label">Hombros (cm)</label><input class="form-input" id="mHombros" type="number" step="0.1" placeholder="110"/></div>
+        <div class="form-group"><label class="form-label">Pecho (cm)</label><input class="form-input" id="mPecho" type="number" step="0.1" placeholder="95"/></div>
+        <div class="form-group"><label class="form-label">Cintura (cm)</label><input class="form-input" id="mCintura" type="number" step="0.1" placeholder="80"/></div>
+        <div class="form-group"><label class="form-label">Abdomen (cm)</label><input class="form-input" id="mAbdomen" type="number" step="0.1" placeholder="85"/></div>
+        <div class="form-group"><label class="form-label">Cadera/Glúteos (cm)</label><input class="form-input" id="mCadera" type="number" step="0.1" placeholder="95"/></div>
+        <div class="form-group"><label class="form-label">Brazo Izq. Relajado</label><input class="form-input" id="mBrazoIzqR" type="number" step="0.1" placeholder="32"/></div>
+        <div class="form-group"><label class="form-label">Brazo Izq. Contraído</label><input class="form-input" id="mBrazoIzqC" type="number" step="0.1" placeholder="35"/></div>
+        <div class="form-group"><label class="form-label">Brazo Der. Relajado</label><input class="form-input" id="mBrazoDerR" type="number" step="0.1" placeholder="32"/></div>
+        <div class="form-group"><label class="form-label">Brazo Der. Contraído</label><input class="form-input" id="mBrazoDerC" type="number" step="0.1" placeholder="35"/></div>
+        <div class="form-group"><label class="form-label">Antebrazo Izq. (cm)</label><input class="form-input" id="mAntebrazoIzq" type="number" step="0.1" placeholder="28"/></div>
+        <div class="form-group"><label class="form-label">Antebrazo Der. (cm)</label><input class="form-input" id="mAntebrazoDer" type="number" step="0.1" placeholder="28"/></div>
+        <div class="form-group"><label class="form-label">Muslo Izq. (cm)</label><input class="form-input" id="mMusloIzq" type="number" step="0.1" placeholder="55"/></div>
+        <div class="form-group"><label class="form-label">Muslo Der. (cm)</label><input class="form-input" id="mMusloDer" type="number" step="0.1" placeholder="55"/></div>
+        <div class="form-group"><label class="form-label">Pantorrilla Izq. (cm)</label><input class="form-input" id="mPantIzq" type="number" step="0.1" placeholder="37"/></div>
+        <div class="form-group"><label class="form-label">Pantorrilla Der. (cm)</label><input class="form-input" id="mPantDer" type="number" step="0.1" placeholder="37"/></div>
+      </div>
+      <button class="btn-submit" onclick="saveMedidas()">Guardar medidas 📐</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ MODAL COPIAR RUTINA ═══════ -->
+<div class="overlay" id="copyOverlay" onclick="if(event.target===this)closeCopyRoutine()">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header"><span class="modal-title">Copiar Rutina</span><button class="modal-close" onclick="closeCopyRoutine()">✕</button></div>
+    <div class="modal-body">
+      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:16px">Los ejercicios se agregan al perfil destino sin borrar los existentes.</p>
+      <div class="form-group"><label class="form-label">Copiar DE</label><select class="form-select" id="copyFrom"></select></div>
+      <div class="form-group"><label class="form-label">Copiar A</label><select class="form-select" id="copyTo"></select></div>
+      <button class="btn-submit" onclick="executeCopyRoutine()">Copiar rutina 📋</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
