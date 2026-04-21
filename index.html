@@ -2,185 +2,161 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
   <title>Fuerza Pro</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
 
-<!-- SPLASH SCREEN -->
+<!-- SPLASH -->
 <div id="splashScreen" class="splash">
-  <div class="splash-content">
+  <div class="splash-inner">
     <div class="splash-logo">FUERZA<span>PRO</span></div>
-    <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+    <div class="splash-bar"><div class="splash-fill"></div></div>
     <div class="splash-credit">Creado por Jhoao Guala</div>
   </div>
 </div>
 
 <!-- LOGIN -->
-<div id="loginScreen" class="login-screen hidden">
-  <div class="login-box">
-    <div class="login-logo">FUERZA<span>PRO</span></div>
-    <div class="login-sub">Tu plataforma de entrenamiento</div>
-
+<div id="loginScreen" class="screen hidden">
+  <div class="auth-box">
+    <div class="auth-logo">FUERZA<span>PRO</span></div>
+    <div class="auth-sub">Tu plataforma de entrenamiento</div>
     <div class="auth-tabs">
-      <button class="auth-tab active" id="authTabLogin"    onclick="switchAuth('login')">Iniciar sesión</button>
-      <button class="auth-tab"        id="authTabRegister" onclick="switchAuth('register')">Registrarse</button>
+      <button class="atab active" id="atLogin"    onclick="switchAuth('login')">Iniciar sesión</button>
+      <button class="atab"        id="atRegister" onclick="switchAuth('register')">Registrarse</button>
     </div>
 
-    <!-- LOGIN FORM -->
-    <div id="loginForm">
-      <div class="form-group">
-        <label class="form-label">Correo electrónico</label>
-        <input class="form-input" id="loginEmail" type="email" placeholder="correo@ejemplo.com" autocomplete="email"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Contraseña</label>
-        <input class="form-input" id="loginPass" type="password" placeholder="Tu contraseña" autocomplete="current-password"/>
-      </div>
-      <div class="auth-error hidden" id="loginError"></div>
-      <div class="resend-wrap hidden" id="resendVerifyWrap">
+    <!-- LOGIN -->
+    <div id="formLogin">
+      <div class="fg"><label class="fl">Correo electrónico</label><input class="fi" id="lEmail" type="email" placeholder="correo@ejemplo.com" autocomplete="email"/></div>
+      <div class="fg"><label class="fl">Contraseña</label><input class="fi" id="lPass" type="password" placeholder="Tu contraseña" autocomplete="current-password"/></div>
+      <div class="auth-err hidden" id="lErr"></div>
+      <div class="resend-wrap hidden" id="resendWrap">
         <span>¿No recibiste el correo?</span>
-        <button onclick="resendVerification()">Reenviar verificación</button>
+        <button class="link-btn" onclick="resendVerification()">Reenviar verificación</button>
       </div>
       <button class="btn-primary" onclick="handleLogin()">Entrar</button>
-      <button class="btn-text" onclick="switchAuth('forgot')">¿Olvidaste tu contraseña?</button>
+      <button class="link-btn center" onclick="switchAuth('forgot')">¿Olvidaste tu contraseña?</button>
     </div>
 
-    <!-- REGISTER FORM -->
-    <div id="registerForm" class="hidden">
-      <div class="form-group">
-        <label class="form-label">Nombre de usuario</label>
-        <input class="form-input" id="regUsername" placeholder="Sin espacios, ej: ana_garcia" autocomplete="username"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Correo electrónico</label>
-        <input class="form-input" id="regEmail" type="email" placeholder="correo@ejemplo.com" autocomplete="email"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Contraseña</label>
-        <input class="form-input" id="regPass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Confirmar contraseña</label>
-        <input class="form-input" id="regPass2" type="password" placeholder="Repite tu contraseña" autocomplete="new-password"/>
-      </div>
-      <div class="auth-error hidden" id="registerError"></div>
-      <div class="verify-notice hidden" id="verifyNotice">
-        Cuenta creada. Revisa tu correo para verificar tu cuenta antes de iniciar sesión.
-      </div>
+    <!-- REGISTRO -->
+    <div id="formRegister" class="hidden">
+      <div class="fg"><label class="fl">Nombre de usuario</label><input class="fi" id="rUser" placeholder="sin espacios, ej: ana_garcia" autocomplete="username"/></div>
+      <div class="fg"><label class="fl">Correo electrónico</label><input class="fi" id="rEmail" type="email" placeholder="correo@ejemplo.com" autocomplete="email"/></div>
+      <div class="fg"><label class="fl">Contraseña</label><input class="fi" id="rPass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/></div>
+      <div class="fg"><label class="fl">Confirmar contraseña</label><input class="fi" id="rPass2" type="password" placeholder="Repite tu contraseña" autocomplete="new-password"/></div>
+      <div class="auth-err hidden" id="rErr"></div>
+      <div class="verify-ok hidden" id="verifyOk">Cuenta creada. Revisa tu correo para verificar tu cuenta antes de iniciar sesión.</div>
       <button class="btn-primary" onclick="handleRegister()">Crear cuenta</button>
     </div>
 
-    <!-- FORGOT FORM -->
-    <div id="forgotForm" class="hidden">
-      <p class="forgot-desc">Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</p>
-      <div class="form-group">
-        <label class="form-label">Correo electrónico</label>
-        <input class="form-input" id="forgotEmail" type="email" placeholder="correo@ejemplo.com"/>
-      </div>
-      <div class="auth-error hidden" id="forgotError"></div>
-      <div class="forgot-success hidden" id="forgotSuccess">Correo enviado. Revisa tu bandeja de entrada.</div>
+    <!-- RECUPERAR -->
+    <div id="formForgot" class="hidden">
+      <p class="auth-desc">Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</p>
+      <div class="fg"><label class="fl">Correo electrónico</label><input class="fi" id="fEmail" type="email" placeholder="correo@ejemplo.com"/></div>
+      <div class="auth-err hidden" id="fErr"></div>
+      <div class="auth-ok hidden" id="fOk">Correo enviado. Revisa tu bandeja de entrada.</div>
       <button class="btn-primary" onclick="handleForgot()">Enviar enlace</button>
-      <button class="btn-text" onclick="switchAuth('login')">Volver al inicio de sesión</button>
+      <button class="link-btn center" onclick="switchAuth('login')">Volver al inicio de sesión</button>
     </div>
   </div>
 </div>
 
-<!-- ONBOARDING (usuarios nuevos) -->
-<div id="onboardingScreen" class="onboarding-screen hidden">
+<!-- ONBOARDING -->
+<div id="onboardScreen" class="screen hidden">
   <div class="onboard-box">
-    <div class="onboard-step" id="onboard1">
-      <div class="onboard-num">01</div>
-      <h2 class="onboard-title">Cuéntanos sobre ti</h2>
-      <p class="onboard-sub">Esta información nos ayuda a personalizar tu experiencia.</p>
-      <div class="form-group">
-        <label class="form-label">Sexo</label>
-        <div class="radio-group">
+    <div id="ob1">
+      <div class="ob-num">01 / 02</div>
+      <h2 class="ob-title">Cuéntanos sobre ti</h2>
+      <p class="ob-sub">Esta información personaliza tu experiencia.</p>
+      <div class="fg"><label class="fl">Sexo</label>
+        <div class="radio-row">
           <label class="radio-opt"><input type="radio" name="obGender" value="Masculino"/> Masculino</label>
           <label class="radio-opt"><input type="radio" name="obGender" value="Femenino"/> Femenino</label>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Nivel de actividad física</label>
-        <select class="form-select" id="obLevel">
+      <div class="fg"><label class="fl">Nivel de actividad física</label>
+        <select class="fi" id="obLevel">
           <option value="">Seleccionar...</option>
           <option value="Sedentario">Sedentario (poco o ningún ejercicio)</option>
-          <option value="Moderado">Moderado (1-3 días/semana)</option>
-          <option value="Activo">Activo (3-5 días/semana)</option>
-          <option value="Muy activo">Muy activo (6-7 días/semana)</option>
+          <option value="Moderado">Moderado (1-3 días por semana)</option>
+          <option value="Activo">Activo (3-5 días por semana)</option>
+          <option value="Muy activo">Muy activo (6-7 días por semana)</option>
         </select>
       </div>
-      <button class="btn-primary" onclick="onboardNext()">Continuar</button>
+      <button class="btn-primary" onclick="ob1Next()">Continuar</button>
     </div>
-
-    <div class="onboard-step hidden" id="onboard2">
-      <div class="onboard-num">02</div>
-      <h2 class="onboard-title">¿Cuál es tu objetivo?</h2>
-      <p class="onboard-sub">Puedes tener más de uno.</p>
-      <div class="goal-grid" id="goalGrid">
+    <div id="ob2" class="hidden">
+      <div class="ob-num">02 / 02</div>
+      <h2 class="ob-title">¿Cuál es tu objetivo?</h2>
+      <p class="ob-sub">Puedes seleccionar más de uno.</p>
+      <div class="goal-grid">
         <button class="goal-btn" onclick="toggleGoal(this)" data-val="Perder grasa">Perder grasa</button>
         <button class="goal-btn" onclick="toggleGoal(this)" data-val="Ganar músculo">Ganar músculo</button>
         <button class="goal-btn" onclick="toggleGoal(this)" data-val="Mejorar resistencia">Mejorar resistencia</button>
         <button class="goal-btn" onclick="toggleGoal(this)" data-val="Aumentar fuerza">Aumentar fuerza</button>
-        <button class="goal-btn" onclick="toggleGoal(this)" data-val="Mejorar salud general">Mejorar salud</button>
+        <button class="goal-btn" onclick="toggleGoal(this)" data-val="Mejorar salud">Mejorar salud</button>
         <button class="goal-btn" onclick="toggleGoal(this)" data-val="Mantenimiento">Mantenimiento</button>
       </div>
-      <div class="auth-error hidden" id="onboardError">Selecciona al menos un objetivo.</div>
-      <button class="btn-primary" style="margin-top:24px" onclick="onboardFinish()">Comenzar</button>
+      <div class="auth-err hidden" id="obErr">Selecciona al menos un objetivo.</div>
+      <button class="btn-primary" style="margin-top:20px" onclick="obFinish()">Comenzar</button>
     </div>
   </div>
 </div>
 
 <!-- APP -->
-<div id="appScreen" class="app-screen hidden">
+<div id="appScreen" class="screen hidden">
   <header>
     <div class="logo">FUERZA<span>PRO</span></div>
-    <div class="header-right">
-      <span class="user-badge" id="userBadge"></span>
-      <button class="btn-header admin-only hidden" id="btnAgregar"   onclick="openModal()">+ Ejercicio</button>
-      <button class="btn-header admin-only hidden" id="btnResetWeek" onclick="confirmResetWeek()">Resetear semana</button>
+    <div class="hright">
+      <div class="user-pill" onclick="switchTab('perfil')" id="userPill">
+        <div class="user-avatar" id="headerAvatar"></div>
+        <span id="headerName"></span>
+      </div>
+      <button class="btn-hdr admin-only hidden" id="btnAdd"       onclick="openModal()">+ Ejercicio</button>
+      <button class="btn-hdr admin-only hidden" id="btnResetWeek" onclick="confirmResetWeek()">Resetear semana</button>
       <button class="btn-logout" onclick="handleLogout()">Salir</button>
     </div>
   </header>
 
-  <nav class="tabs-nav">
-    <button class="tab-btn active" id="tabRutina"   onclick="switchTab('rutina')">Rutina</button>
-    <button class="tab-btn"        id="tabDieta"    onclick="switchTab('dieta')">Dieta</button>
-    <button class="tab-btn"        id="tabProgreso" onclick="switchTab('progreso')">Progreso</button>
-    <button class="tab-btn"        id="tabCiclo"    onclick="switchTab('ciclo')">Ciclo</button>
-    <button class="tab-btn admin-only hidden" id="tabAdmin" onclick="switchTab('admin')">Admin</button>
+  <nav class="tabs">
+    <button class="tab active" id="tabRutina"   onclick="switchTab('rutina')">Rutina</button>
+    <button class="tab"        id="tabDieta"    onclick="switchTab('dieta')">Dieta</button>
+    <button class="tab"        id="tabProgreso" onclick="switchTab('progreso')">Progreso</button>
+    <button class="tab"        id="tabCiclo"    onclick="switchTab('ciclo')">Ciclo</button>
+    <button class="tab"        id="tabPerfil"   onclick="switchTab('perfil')">Perfil</button>
+    <button class="tab admin-only hidden" id="tabAdmin" onclick="switchTab('admin')">Admin</button>
   </nav>
 
   <!-- RUTINA -->
   <div id="panelRutina">
-    <div class="days-nav-wrap">
-      <nav class="days-nav" id="daysNav"></nav>
-    </div>
+    <div class="dnav-wrap"><nav class="dnav" id="daysNav"></nav></div>
     <main class="main">
       <div class="week-bar">
-        <span class="week-bar-label">Semana</span>
-        <div class="week-bar-track"><div class="week-bar-fill" id="progressFill"></div></div>
-        <span class="week-bar-pct" id="progressPct">0%</span>
+        <span class="wb-lbl">Semana</span>
+        <div class="wb-track"><div class="wb-fill" id="wbFill"></div></div>
+        <span class="wb-pct" id="wbPct">0%</span>
       </div>
-      <div class="panel-header">
-        <h2 class="panel-title" id="sectionTitle">LUNES</h2>
-        <button class="btn-sm admin-only hidden" onclick="openMoveExercisesModal()">Mover ejercicios</button>
+      <div class="ph">
+        <h2 class="ptitle" id="dayTitle">LUNES</h2>
+        <div class="ph-actions">
+          <button class="btn-sm admin-only hidden" onclick="openMoveModal()">Mover ejercicios</button>
+          <button class="btn-sm admin-only hidden" onclick="openSaveRoutineModal()">Guardar rutina</button>
+        </div>
       </div>
-      <div id="exercisesList"></div>
+      <div id="exList"></div>
     </main>
   </div>
 
   <!-- DIETA -->
   <div id="panelDieta" class="hidden">
-    <div class="days-nav-wrap">
-      <nav class="days-nav" id="dietDaysNav"></nav>
-    </div>
+    <div class="dnav-wrap"><nav class="dnav" id="dietNav"></nav></div>
     <main class="main">
-      <div class="panel-header">
-        <h2 class="panel-title" id="dietSectionTitle">LUNES</h2>
-        <button class="btn-sm admin-only hidden" id="btnAddMeal" onclick="openMealModal()">+ Comida</button>
+      <div class="ph">
+        <h2 class="ptitle" id="dietTitle">LUNES</h2>
+        <button class="btn-sm admin-only hidden" id="btnMeal" onclick="openMealModal()">+ Comida</button>
       </div>
       <div id="dietContent"></div>
     </main>
@@ -189,31 +165,23 @@
   <!-- PROGRESO -->
   <div id="panelProgreso" class="hidden">
     <main class="main">
-      <div class="subtabs">
-        <button class="stab active" id="pstabComp"     onclick="switchProgressTab('comp')">Composición</button>
-        <button class="stab"        id="pstabMedidas"  onclick="switchProgressTab('medidas')">Medidas</button>
-        <button class="stab"        id="pstabGraficas" onclick="switchProgressTab('graficas')">Gráficas</button>
+      <div class="stabs">
+        <button class="stab active" id="pstComp"     onclick="switchProg('comp')">Composición</button>
+        <button class="stab"        id="pstMedidas"  onclick="switchProg('medidas')">Medidas</button>
+        <button class="stab"        id="pstGraficas" onclick="switchProg('graficas')">Gráficas</button>
       </div>
       <div id="ppComp">
-        <div class="panel-header" style="margin-top:24px">
-          <h2 class="panel-title sm">Composición Corporal</h2>
-          <button class="btn-sm" onclick="openBodyModal()">+ Registro</button>
-        </div>
-        <div id="bodyLatest"></div><div id="bodyHistory"></div>
+        <div class="ph" style="margin-top:20px"><h2 class="ptitle sm">Composición Corporal</h2><button class="btn-sm" onclick="openBodyModal()">+ Registro</button></div>
+        <div id="bodyLatest"></div><div id="bodyHist"></div>
       </div>
       <div id="ppMedidas" class="hidden">
-        <div class="panel-header" style="margin-top:24px">
-          <h2 class="panel-title sm">Medidas Corporales</h2>
-          <button class="btn-sm" onclick="openMedidasModal()">+ Registro</button>
-        </div>
-        <div id="medidasLatest"></div><div id="medidasHistory"></div>
+        <div class="ph" style="margin-top:20px"><h2 class="ptitle sm">Medidas Corporales</h2><button class="btn-sm" onclick="openMedidasModal()">+ Registro</button></div>
+        <div id="medidasLatest"></div><div id="medidasHist"></div>
       </div>
       <div id="ppGraficas" class="hidden">
-        <div class="panel-header" style="margin-top:24px">
-          <h2 class="panel-title sm">Gráficas de Progreso</h2>
-        </div>
-        <div class="card" style="margin-bottom:20px">
-          <div class="chart-tabs" id="bodyChartTabs">
+        <div class="ph" style="margin-top:20px"><h2 class="ptitle sm">Gráficas de Progreso</h2></div>
+        <div class="card mb16">
+          <div class="ctabs" id="bodyCtabs">
             <button class="ctab active" onclick="switchBodyChart('peso')">Peso</button>
             <button class="ctab" onclick="switchBodyChart('grasa')">Grasa</button>
             <button class="ctab" onclick="switchBodyChart('musculo')">Músculo</button>
@@ -221,12 +189,12 @@
           </div>
           <div class="chart-wrap"><canvas id="bodyChart"></canvas><div class="chart-empty" id="bodyChartEmpty"><p>Agrega 2 o más registros para ver la gráfica</p></div></div>
         </div>
-        <h3 class="section-subtitle">Peso por ejercicio</h3>
-        <div id="weightChartSection"></div>
-        <h3 class="section-subtitle" style="margin-top:24px">Medidas</h3>
+        <h3 class="ssub">Peso por ejercicio</h3>
+        <div id="wCharts"></div>
+        <h3 class="ssub mt16">Medidas</h3>
         <div class="card">
-          <div class="chart-tabs" id="medidasChartTabs"></div>
-          <div class="chart-wrap"><canvas id="medidasChart"></canvas><div class="chart-empty" id="medidasChartEmpty"><p>Agrega 2 o más registros de medidas</p></div></div>
+          <div class="ctabs" id="medCtabs"></div>
+          <div class="chart-wrap"><canvas id="medChart"></canvas><div class="chart-empty" id="medChartEmpty"><p>Agrega 2 o más registros de medidas</p></div></div>
         </div>
       </div>
     </main>
@@ -235,92 +203,104 @@
   <!-- CICLO -->
   <div id="panelCiclo" class="hidden">
     <main class="main">
-      <div class="panel-header"><h2 class="panel-title">Ciclo de Entrenamiento</h2></div>
-      <div id="cycleHero" class="card" style="margin-bottom:20px"></div>
+      <div class="ph"><h2 class="ptitle">Ciclo de Entrenamiento</h2></div>
+      <div class="card mb16" id="cycleHero"></div>
       <div class="card admin-only hidden" id="cycleConfig">
         <h3 class="card-title">Configurar ciclo</h3>
         <div class="form-row">
-          <div class="form-group"><label class="form-label">Fecha inicio</label><input class="form-input" id="cycleStart" type="date"/></div>
-          <div class="form-group"><label class="form-label">Fecha fin</label><input class="form-input" id="cycleEnd" type="date"/></div>
+          <div class="fg"><label class="fl">Fecha inicio</label><input class="fi" id="cyStart" type="date"/></div>
+          <div class="fg"><label class="fl">Fecha fin</label><input class="fi" id="cyEnd" type="date"/></div>
         </div>
-        <div class="form-group"><label class="form-label">Nombre del ciclo</label><input class="form-input" id="cycleName" placeholder="Ej: Volumen, Definición..."/></div>
+        <div class="fg"><label class="fl">Nombre del ciclo</label><input class="fi" id="cyName" placeholder="Ej: Volumen, Definición..."/></div>
         <button class="btn-primary" onclick="saveCycle()">Guardar ciclo</button>
       </div>
+    </main>
+  </div>
+
+  <!-- PERFIL -->
+  <div id="panelPerfil" class="hidden">
+    <main class="main">
+      <div class="ph"><h2 class="ptitle">Mi Perfil</h2><button class="btn-sm" onclick="saveProfile()">Guardar cambios</button></div>
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar" id="profileAvatar"></div>
+        <button class="btn-sm" onclick="document.getElementById('avatarUrlInput').focus()">Cambiar foto</button>
+      </div>
+      <div class="fg"><label class="fl">URL de foto de perfil</label><input class="fi" id="avatarUrlInput" placeholder="https://... (link de tu foto)" oninput="previewAvatar()"/><div class="fhint">Sube tu foto a imgur.com o usa un link de Google Photos</div></div>
+      <div class="form-row">
+        <div class="fg"><label class="fl">Nombre</label><input class="fi" id="pNombre" placeholder="Tu nombre"/></div>
+        <div class="fg"><label class="fl">Apellido</label><input class="fi" id="pApellido" placeholder="Tu apellido"/></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label class="fl">Fecha de nacimiento</label><input class="fi" id="pFecha" type="date"/></div>
+        <div class="fg"><label class="fl">Teléfono</label><input class="fi" id="pTel" type="tel" placeholder="+593..."/></div>
+      </div>
+      <div class="fg"><label class="fl">Ciudad</label><input class="fi" id="pCiudad" placeholder="Tu ciudad"/></div>
+      <div class="fg"><label class="fl">Objetivo principal</label><input class="fi" id="pObjetivo" placeholder="Ej: Ganar músculo, perder grasa..."/></div>
+      <div class="profile-info-card" id="profileInfoCard"></div>
     </main>
   </div>
 
   <!-- ADMIN -->
   <div id="panelAdmin" class="hidden">
     <main class="main">
-      <div class="panel-header">
-        <h2 class="panel-title">Panel de Administración</h2>
-        <button class="btn-sm" onclick="openSavedRoutinesModal()">Rutinas guardadas</button>
-      </div>
-
-      <!-- Buscador -->
-      <div class="search-wrap">
-        <input class="form-input" id="userSearch" placeholder="Buscar usuario..." oninput="filterUsers()"/>
-      </div>
-
-      <!-- Usuarios por sexo -->
+      <div class="ph"><h2 class="ptitle">Administración</h2><button class="btn-sm" onclick="openSavedRoutinesModal()">Rutinas guardadas</button></div>
+      <div class="search-box"><input class="fi" id="userSearch" placeholder="Buscar usuario..." oninput="filterUsers()"/></div>
       <div id="usersPanel"></div>
-
-      <!-- Gestión de usuario -->
-      <div class="card" style="margin-top:24px" id="adminManageCard">
+      <div class="card mt16" id="adminManage">
         <h3 class="card-title">Gestionar usuario</h3>
         <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Seleccionar usuario</label>
-            <select class="form-select" id="adminViewUser" onchange="adminLoadUser()">
-              <option value="">— Seleccionar —</option>
-            </select>
+          <div class="fg"><label class="fl">Seleccionar usuario</label>
+            <select class="fi" id="adminSel" onchange="adminLoadUser()"><option value="">— Seleccionar —</option></select>
           </div>
-          <div class="form-group" style="display:flex;align-items:flex-end;gap:8px">
+          <div class="fg" style="display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap">
             <button class="btn-sm" onclick="openCopyRoutine()">Copiar rutina</button>
             <button class="btn-sm danger" onclick="deleteSelectedUser()">Eliminar usuario</button>
           </div>
         </div>
-        <div id="adminUserPanel"></div>
+        <div id="adminPanel"></div>
       </div>
     </main>
   </div>
 </div>
 
 <!-- MODAL EJERCICIO -->
-<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+<div class="overlay" id="ovExercise" onclick="handleOvClick(event,'ovExercise','closeModal')">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title" id="exerciseModalTitle">Nuevo Ejercicio</span><button class="modal-close" onclick="closeModal()">✕</button></div>
-    <div class="modal-body">
-      <div class="form-group"><label class="form-label">Nombre *</label><input class="form-input" id="fName" placeholder="Ej: Press de banca..."/></div>
-      <div class="form-group"><label class="form-label">Día *</label>
-        <select class="form-select" id="fDay">
+    <div class="mh"><span class="mt" id="exModalTitle">Nuevo Ejercicio</span><button class="mc" onclick="closeModal()">✕</button></div>
+    <div class="mb">
+      <div class="fg"><label class="fl">Nombre *</label>
+        <input class="fi" id="fName" placeholder="Ej: Press de banca..." list="exSuggestions" autocomplete="off"/>
+        <datalist id="exSuggestions"></datalist>
+      </div>
+      <div class="fg"><label class="fl">Día *</label>
+        <select class="fi" id="fDay">
           <option>Lunes</option><option>Martes</option><option>Miércoles</option>
           <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
         </select>
       </div>
-      <div class="form-row-3">
-        <div class="form-group"><label class="form-label">Series</label><input class="form-input" id="fSets" type="number" min="1" placeholder="3"/></div>
-        <div class="form-group"><label class="form-label">Reps</label><input class="form-input" id="fReps" type="number" min="1" placeholder="12"/></div>
-        <div class="form-group"><label class="form-label">Descanso</label><input class="form-input" id="fRest" placeholder="60s"/></div>
+      <div class="form-row3">
+        <div class="fg"><label class="fl">Series</label><input class="fi" id="fSets" type="number" min="1" placeholder="3"/></div>
+        <div class="fg"><label class="fl">Reps</label><input class="fi" id="fReps" type="number" min="1" placeholder="12"/></div>
+        <div class="fg"><label class="fl">Descanso</label><input class="fi" id="fRest" placeholder="60s"/></div>
       </div>
-      <div class="form-group"><label class="form-label">Peso inicial (kg)</label><input class="form-input" id="fWeight" type="number" step="0.5" placeholder="Ej: 40"/><div class="form-hint">Se registra el historial semana a semana</div></div>
-      <div class="form-group"><label class="form-label">Grupo muscular</label>
-        <select class="form-select" id="fMuscle">
+      <div class="fg"><label class="fl">Peso inicial (kg)</label><input class="fi" id="fWeight" type="number" step="0.5" placeholder="Ej: 40"/><div class="fhint">Se registra el historial semana a semana</div></div>
+      <div class="fg"><label class="fl">Grupo muscular</label>
+        <select class="fi" id="fMuscle">
           <option value="">— Seleccionar —</option>
           <option>Bíceps</option><option>Tríceps</option><option>Pecho</option><option>Espalda</option>
           <option>Piernas</option><option>Glúteos</option><option>Hombros</option><option>Core / Abdomen</option>
           <option>Cardio</option><option>Cuerpo completo</option>
         </select>
       </div>
-      <div class="form-group">
-        <label class="form-label">GIF del ejercicio</label>
-        <input class="form-input" id="fGif" placeholder="Link del GIF (giphy.com)"/>
-        <div class="form-hint">giphy.com → buscar → Share → Copy Link</div>
-        <button class="btn-text-sm" onclick="previewGif()">Vista previa</button>
-        <div class="gif-error hidden" id="gifError">No se pudo cargar la imagen. Verifica el link.</div>
+      <div class="fg">
+        <label class="fl">GIF del ejercicio</label>
+        <input class="fi" id="fGif" placeholder="Link del GIF (giphy.com)"/>
+        <div class="fhint">giphy.com → buscar → Share → Copy Link</div>
+        <button class="link-btn" onclick="previewGif()">Vista previa</button>
+        <div class="gif-err hidden" id="gifErr">No se pudo cargar. Verifica el link.</div>
         <div class="gif-preview" id="gifPreview"><span>Vista previa aquí</span></div>
       </div>
-      <div class="form-group"><label class="form-label">Notas</label><textarea class="form-textarea" id="fNotes" placeholder="Técnica, indicaciones..."></textarea></div>
+      <div class="fg"><label class="fl">Notas</label><textarea class="fi ta" id="fNotes" placeholder="Técnica, indicaciones..."></textarea></div>
       <input type="hidden" id="fEditId"/><input type="hidden" id="fTargetUser"/>
       <button class="btn-primary" onclick="saveExercise()">Guardar ejercicio</button>
     </div>
@@ -328,150 +308,150 @@
 </div>
 
 <!-- MODAL PESO -->
-<div class="overlay" id="weightOverlay" onclick="if(event.target===this)closeWeightModal()">
+<div class="overlay" id="ovWeight" onclick="handleOvClick(event,'ovWeight','closeWeightModal')">
   <div class="modal" style="max-width:380px">
-    <div class="modal-header"><span class="modal-title" id="weightModalTitle">Actualizar peso</span><button class="modal-close" onclick="closeWeightModal()">✕</button></div>
-    <div class="modal-body">
-      <div class="form-group"><label class="form-label">Nuevo peso (kg)</label><input class="form-input" id="wNewWeight" type="number" step="0.5" placeholder="Ej: 42.5"/></div>
-      <div id="weightHistoryWrap"></div>
-      <button class="btn-primary" onclick="saveWeight()">Guardar peso</button>
+    <div class="mh"><span class="mt" id="wModalTitle">Actualizar peso</span><button class="mc" onclick="closeWeightModal()">✕</button></div>
+    <div class="mb">
+      <div class="fg"><label class="fl">Nuevo peso (kg)</label><input class="fi" id="wKg" type="number" step="0.5" placeholder="Ej: 42.5"/></div>
+      <div id="wHistWrap"></div>
+      <button class="btn-primary" onclick="saveWeight()">Guardar</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL MOVER EJERCICIOS -->
-<div class="overlay" id="moveExOverlay" onclick="if(event.target===this)closeMoveExercisesModal()">
+<div class="overlay" id="ovMove" onclick="handleOvClick(event,'ovMove','closeMoveModal')">
   <div class="modal" style="max-width:420px">
-    <div class="modal-header"><span class="modal-title">Mover ejercicios</span><button class="modal-close" onclick="closeMoveExercisesModal()">✕</button></div>
-    <div class="modal-body">
-      <p class="modal-desc">Mueve todos los ejercicios de un día a otro.</p>
+    <div class="mh"><span class="mt">Mover ejercicios</span><button class="mc" onclick="closeMoveModal()">✕</button></div>
+    <div class="mb">
+      <p class="mdesc">Intercambia o mueve todos los ejercicios de un día a otro.</p>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Día origen</label>
-          <select class="form-select" id="moveFrom">
+        <div class="fg"><label class="fl">Día origen</label>
+          <select class="fi" id="moveFrom">
             <option>Lunes</option><option>Martes</option><option>Miércoles</option><option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
           </select>
         </div>
-        <div class="form-group"><label class="form-label">Día destino</label>
-          <select class="form-select" id="moveTo">
+        <div class="fg"><label class="fl">Día destino</label>
+          <select class="fi" id="moveTo">
             <option>Lunes</option><option>Martes</option><option>Miércoles</option><option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
           </select>
         </div>
       </div>
-      <div class="form-group"><label class="form-label">Usuario</label>
-        <select class="form-select" id="moveUserSelect"></select>
+      <div class="fg"><label class="fl">Acción</label>
+        <div class="radio-row">
+          <label class="radio-opt"><input type="radio" name="moveAction" value="move" checked/> Mover (solo origen → destino)</label>
+          <label class="radio-opt"><input type="radio" name="moveAction" value="swap"/> Intercambiar ambos días</label>
+        </div>
       </div>
-      <button class="btn-primary" onclick="executeMoveExercises()">Mover ejercicios</button>
+      <div class="fg"><label class="fl">Usuario</label><select class="fi" id="moveUserSel"></select></div>
+      <button class="btn-primary" onclick="executeMoveExercises()">Aplicar</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL GUARDAR RUTINA -->
-<div class="overlay" id="saveRoutineOverlay" onclick="if(event.target===this)closeSaveRoutineModal()">
+<div class="overlay" id="ovSaveRoutine" onclick="handleOvClick(event,'ovSaveRoutine','closeSaveRoutineModal')">
   <div class="modal" style="max-width:420px">
-    <div class="modal-header"><span class="modal-title">Guardar rutina</span><button class="modal-close" onclick="closeSaveRoutineModal()">✕</button></div>
-    <div class="modal-body">
-      <div class="form-group"><label class="form-label">Nombre de la rutina *</label><input class="form-input" id="routineName" placeholder="Ej: Rutina volumen, Push-Pull..."/></div>
-      <div class="form-group"><label class="form-label">¿Qué guardar?</label>
-        <div class="radio-group">
+    <div class="mh"><span class="mt">Guardar rutina</span><button class="mc" onclick="closeSaveRoutineModal()">✕</button></div>
+    <div class="mb">
+      <div class="fg"><label class="fl">Nombre de la rutina *</label><input class="fi" id="routineName" placeholder="Ej: Rutina de volumen..."/></div>
+      <div class="fg"><label class="fl">¿Qué guardar?</label>
+        <div class="radio-row">
           <label class="radio-opt"><input type="radio" name="routineScope" value="day" checked/> Solo el día actual</label>
           <label class="radio-opt"><input type="radio" name="routineScope" value="week"/> Semana completa</label>
         </div>
       </div>
-      <div class="form-group"><label class="form-label">Usuario origen</label>
-        <select class="form-select" id="routineUserSelect"></select>
-      </div>
-      <button class="btn-primary" onclick="saveRoutine()">Guardar rutina</button>
+      <div class="fg"><label class="fl">Usuario origen</label><select class="fi" id="routineUserSel"></select></div>
+      <button class="btn-primary" onclick="saveRoutine()">Guardar</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL RUTINAS GUARDADAS -->
-<div class="overlay" id="savedRoutinesOverlay" onclick="if(event.target===this)closeSavedRoutinesModal()">
+<div class="overlay" id="ovSavedRoutines" onclick="handleOvClick(event,'ovSavedRoutines','closeSavedRoutinesModal')">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title">Rutinas guardadas</span><button class="modal-close" onclick="closeSavedRoutinesModal()">✕</button></div>
-    <div class="modal-body">
-      <div id="savedRoutinesList"></div>
-    </div>
+    <div class="mh"><span class="mt">Rutinas guardadas</span><button class="mc" onclick="closeSavedRoutinesModal()">✕</button></div>
+    <div class="mb"><div id="savedRoutinesList"></div></div>
   </div>
 </div>
 
 <!-- MODAL COMIDA -->
-<div class="overlay" id="mealOverlay" onclick="if(event.target===this)closeMealModal()">
+<div class="overlay" id="ovMeal" onclick="handleOvClick(event,'ovMeal','closeMealModal')">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title" id="mealModalTitle">Nueva Comida</span><button class="modal-close" onclick="closeMealModal()">✕</button></div>
-    <div class="modal-body">
+    <div class="mh"><span class="mt" id="mealTitle">Nueva Comida</span><button class="mc" onclick="closeMealModal()">✕</button></div>
+    <div class="mb">
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Tiempo *</label>
-          <select class="form-select" id="mealTime">
+        <div class="fg"><label class="fl">Tiempo *</label>
+          <select class="fi" id="mTime">
             <option value="Desayuno">Desayuno</option><option value="Almuerzo">Almuerzo</option>
             <option value="Merienda">Merienda</option><option value="Cena">Cena</option>
           </select>
         </div>
-        <div class="form-group"><label class="form-label">Día *</label>
-          <select class="form-select" id="mealDay">
+        <div class="fg"><label class="fl">Día *</label>
+          <select class="fi" id="mDay">
             <option>Lunes</option><option>Martes</option><option>Miércoles</option>
             <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
           </select>
         </div>
       </div>
-      <div class="form-group"><label class="form-label">Alimento *</label><input class="form-input" id="mealName" placeholder="Ej: Pollo a la plancha..."/></div>
+      <div class="fg"><label class="fl">Alimento *</label><input class="fi" id="mName" placeholder="Ej: Pollo a la plancha..."/></div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Cantidad</label><input class="form-input" id="mealQty" placeholder="Ej: 150g"/></div>
-        <div class="form-group"><label class="form-label">Calorías (kcal)</label><input class="form-input" id="mealCal" type="number" placeholder="250"/></div>
+        <div class="fg"><label class="fl">Cantidad</label><input class="fi" id="mQty" placeholder="Ej: 150g"/></div>
+        <div class="fg"><label class="fl">Calorías (kcal)</label><input class="fi" id="mCal" type="number" placeholder="250"/></div>
       </div>
-      <div class="form-row-3">
-        <div class="form-group"><label class="form-label">Proteína (g)</label><input class="form-input" id="mealProt" type="number" step="0.1" placeholder="30"/></div>
-        <div class="form-group"><label class="form-label">Carbohidratos (g)</label><input class="form-input" id="mealCarbs" type="number" step="0.1" placeholder="20"/></div>
-        <div class="form-group"><label class="form-label">Grasas (g)</label><input class="form-input" id="mealFat" type="number" step="0.1" placeholder="8"/></div>
+      <div class="form-row3">
+        <div class="fg"><label class="fl">Proteína (g)</label><input class="fi" id="mProt" type="number" step="0.1" placeholder="30"/></div>
+        <div class="fg"><label class="fl">Carbs (g)</label><input class="fi" id="mCarbs" type="number" step="0.1" placeholder="20"/></div>
+        <div class="fg"><label class="fl">Grasas (g)</label><input class="fi" id="mFat" type="number" step="0.1" placeholder="8"/></div>
       </div>
-      <div class="form-group"><label class="form-label">Notas</label><textarea class="form-textarea" id="mealNotes" placeholder="Preparación, sustitutos..."></textarea></div>
-      <input type="hidden" id="mealEditId"/><input type="hidden" id="mealTargetUser"/>
+      <div class="fg"><label class="fl">Notas</label><textarea class="fi ta" id="mNotes" placeholder="Preparación, sustitutos..."></textarea></div>
+      <input type="hidden" id="mEditId"/><input type="hidden" id="mTargetUser"/>
       <button class="btn-primary" onclick="saveMeal()">Guardar comida</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL COMPOSICIÓN -->
-<div class="overlay" id="bodyOverlay" onclick="if(event.target===this)closeBodyModal()">
+<div class="overlay" id="ovBody" onclick="handleOvClick(event,'ovBody','closeBodyModal')">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title">Composición Corporal</span><button class="modal-close" onclick="closeBodyModal()">✕</button></div>
-    <div class="modal-body">
-      <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" id="bDate" type="date"/></div>
-      <div class="form-row"><div class="form-group"><label class="form-label">Edad</label><input class="form-input" id="bEdad" type="number" placeholder="25"/></div><div class="form-group"><label class="form-label">Estatura (cm)</label><input class="form-input" id="bEstatura" type="number" step="0.1" placeholder="175"/></div></div>
-      <div class="form-row"><div class="form-group"><label class="form-label">Peso (kg)</label><input class="form-input" id="bPeso" type="number" step="0.1" placeholder="70"/></div><div class="form-group"><label class="form-label">Agua corporal (%)</label><input class="form-input" id="bAgua" type="number" step="0.1" placeholder="55"/></div></div>
-      <div class="form-row"><div class="form-group"><label class="form-label">Grasa corporal (%)</label><input class="form-input" id="bGrasa" type="number" step="0.1" placeholder="18"/></div><div class="form-group"><label class="form-label">Masa ósea (kg)</label><input class="form-input" id="bHueso" type="number" step="0.1" placeholder="3.2"/></div></div>
-      <div class="form-row"><div class="form-group"><label class="form-label">Grasa visceral (1-20)</label><input class="form-input" id="bVisceral" type="number" step="0.1" placeholder="8"/></div><div class="form-group"><label class="form-label">Masa muscular (%)</label><input class="form-input" id="bMusculo" type="number" step="0.1" placeholder="42"/></div></div>
-      <div class="form-row"><div class="form-group"><label class="form-label">BMI (auto)</label><input class="form-input" id="bBMI" type="number" step="0.1" placeholder="Calculado automáticamente"/></div><div class="form-group"><label class="form-label">BMR kcal (auto)</label><input class="form-input" id="bBMR" type="number" placeholder="Calculado automáticamente"/></div></div>
-      <div class="form-group"><label class="form-label">Edad fisiológica</label><input class="form-input" id="bEdadFisio" type="number" placeholder="Ej: 28"/></div>
-      <div class="form-hint" style="margin-bottom:14px">BMI y BMR se calculan automáticamente con peso y estatura si los dejas vacíos.</div>
+    <div class="mh"><span class="mt">Composición Corporal</span><button class="mc" onclick="closeBodyModal()">✕</button></div>
+    <div class="mb">
+      <div class="fg"><label class="fl">Fecha</label><input class="fi" id="bDate" type="date"/></div>
+      <div class="form-row"><div class="fg"><label class="fl">Edad</label><input class="fi" id="bEdad" type="number" placeholder="25"/></div><div class="fg"><label class="fl">Estatura (cm)</label><input class="fi" id="bEstatura" type="number" step="0.1" placeholder="175"/></div></div>
+      <div class="form-row"><div class="fg"><label class="fl">Peso (kg)</label><input class="fi" id="bPeso" type="number" step="0.1" placeholder="70"/></div><div class="fg"><label class="fl">Agua corporal (%)</label><input class="fi" id="bAgua" type="number" step="0.1" placeholder="55"/></div></div>
+      <div class="form-row"><div class="fg"><label class="fl">Grasa corporal (%)</label><input class="fi" id="bGrasa" type="number" step="0.1" placeholder="18"/></div><div class="fg"><label class="fl">Masa ósea (kg)</label><input class="fi" id="bHueso" type="number" step="0.1" placeholder="3.2"/></div></div>
+      <div class="form-row"><div class="fg"><label class="fl">Grasa visceral (1-20)</label><input class="fi" id="bVisceral" type="number" step="0.1" placeholder="8"/></div><div class="fg"><label class="fl">Masa muscular (%)</label><input class="fi" id="bMusculo" type="number" step="0.1" placeholder="42"/></div></div>
+      <div class="form-row"><div class="fg"><label class="fl">BMI (auto)</label><input class="fi" id="bBMI" type="number" step="0.1" placeholder="Calculado automáticamente"/></div><div class="fg"><label class="fl">BMR kcal (auto)</label><input class="fi" id="bBMR" type="number" placeholder="Calculado automáticamente"/></div></div>
+      <div class="fg"><label class="fl">Edad fisiológica</label><input class="fi" id="bEdadFisio" type="number" placeholder="Ej: 28"/></div>
+      <div class="fhint mb8">BMI y BMR se calculan automáticamente con peso y estatura si los dejas vacíos.</div>
       <button class="btn-primary" onclick="saveBody()">Guardar</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL MEDIDAS -->
-<div class="overlay" id="medidasOverlay" onclick="if(event.target===this)closeMedidasModal()">
+<div class="overlay" id="ovMedidas" onclick="handleOvClick(event,'ovMedidas','closeMedidasModal')">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title">Medidas Corporales</span><button class="modal-close" onclick="closeMedidasModal()">✕</button></div>
-    <div class="modal-body">
-      <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" id="mDate" type="date"/></div>
-      <div class="medidas-grid">
-        <div class="form-group"><label class="form-label">Cuello (cm)</label><input class="form-input" id="mCuello" type="number" step="0.1" placeholder="38"/></div>
-        <div class="form-group"><label class="form-label">Hombros (cm)</label><input class="form-input" id="mHombros" type="number" step="0.1" placeholder="110"/></div>
-        <div class="form-group"><label class="form-label">Pecho (cm)</label><input class="form-input" id="mPecho" type="number" step="0.1" placeholder="95"/></div>
-        <div class="form-group"><label class="form-label">Cintura (cm)</label><input class="form-input" id="mCintura" type="number" step="0.1" placeholder="80"/></div>
-        <div class="form-group"><label class="form-label">Abdomen (cm)</label><input class="form-input" id="mAbdomen" type="number" step="0.1" placeholder="85"/></div>
-        <div class="form-group"><label class="form-label">Cadera / Glúteos (cm)</label><input class="form-input" id="mCadera" type="number" step="0.1" placeholder="95"/></div>
-        <div class="form-group"><label class="form-label">Brazo Izq. Relajado</label><input class="form-input" id="mBrazoIzqR" type="number" step="0.1" placeholder="32"/></div>
-        <div class="form-group"><label class="form-label">Brazo Izq. Contraído</label><input class="form-input" id="mBrazoIzqC" type="number" step="0.1" placeholder="35"/></div>
-        <div class="form-group"><label class="form-label">Brazo Der. Relajado</label><input class="form-input" id="mBrazoDerR" type="number" step="0.1" placeholder="32"/></div>
-        <div class="form-group"><label class="form-label">Brazo Der. Contraído</label><input class="form-input" id="mBrazoDerC" type="number" step="0.1" placeholder="35"/></div>
-        <div class="form-group"><label class="form-label">Antebrazo Izq. (cm)</label><input class="form-input" id="mAntebrazoIzq" type="number" step="0.1" placeholder="28"/></div>
-        <div class="form-group"><label class="form-label">Antebrazo Der. (cm)</label><input class="form-input" id="mAntebrazoDer" type="number" step="0.1" placeholder="28"/></div>
-        <div class="form-group"><label class="form-label">Muslo Izq. (cm)</label><input class="form-input" id="mMusloIzq" type="number" step="0.1" placeholder="55"/></div>
-        <div class="form-group"><label class="form-label">Muslo Der. (cm)</label><input class="form-input" id="mMusloDer" type="number" step="0.1" placeholder="55"/></div>
-        <div class="form-group"><label class="form-label">Pantorrilla Izq. (cm)</label><input class="form-input" id="mPantIzq" type="number" step="0.1" placeholder="37"/></div>
-        <div class="form-group"><label class="form-label">Pantorrilla Der. (cm)</label><input class="form-input" id="mPantDer" type="number" step="0.1" placeholder="37"/></div>
+    <div class="mh"><span class="mt">Medidas Corporales</span><button class="mc" onclick="closeMedidasModal()">✕</button></div>
+    <div class="mb">
+      <div class="fg"><label class="fl">Fecha</label><input class="fi" id="mDate" type="date"/></div>
+      <div class="medgrid">
+        <div class="fg"><label class="fl">Cuello (cm)</label><input class="fi" id="mCuello" type="number" step="0.1" placeholder="38"/></div>
+        <div class="fg"><label class="fl">Hombros (cm)</label><input class="fi" id="mHombros" type="number" step="0.1" placeholder="110"/></div>
+        <div class="fg"><label class="fl">Pecho (cm)</label><input class="fi" id="mPecho" type="number" step="0.1" placeholder="95"/></div>
+        <div class="fg"><label class="fl">Cintura (cm)</label><input class="fi" id="mCintura" type="number" step="0.1" placeholder="80"/></div>
+        <div class="fg"><label class="fl">Abdomen (cm)</label><input class="fi" id="mAbdomen" type="number" step="0.1" placeholder="85"/></div>
+        <div class="fg"><label class="fl">Cadera / Glúteos (cm)</label><input class="fi" id="mCadera" type="number" step="0.1" placeholder="95"/></div>
+        <div class="fg"><label class="fl">Brazo Izq. Relajado</label><input class="fi" id="mBIzqR" type="number" step="0.1" placeholder="32"/></div>
+        <div class="fg"><label class="fl">Brazo Izq. Contraído</label><input class="fi" id="mBIzqC" type="number" step="0.1" placeholder="35"/></div>
+        <div class="fg"><label class="fl">Brazo Der. Relajado</label><input class="fi" id="mBDerR" type="number" step="0.1" placeholder="32"/></div>
+        <div class="fg"><label class="fl">Brazo Der. Contraído</label><input class="fi" id="mBDerC" type="number" step="0.1" placeholder="35"/></div>
+        <div class="fg"><label class="fl">Antebrazo Izq. (cm)</label><input class="fi" id="mAIzq" type="number" step="0.1" placeholder="28"/></div>
+        <div class="fg"><label class="fl">Antebrazo Der. (cm)</label><input class="fi" id="mADer" type="number" step="0.1" placeholder="28"/></div>
+        <div class="fg"><label class="fl">Muslo Izq. (cm)</label><input class="fi" id="mMIzq" type="number" step="0.1" placeholder="55"/></div>
+        <div class="fg"><label class="fl">Muslo Der. (cm)</label><input class="fi" id="mMDer" type="number" step="0.1" placeholder="55"/></div>
+        <div class="fg"><label class="fl">Pantorrilla Izq. (cm)</label><input class="fi" id="mPIzq" type="number" step="0.1" placeholder="37"/></div>
+        <div class="fg"><label class="fl">Pantorrilla Der. (cm)</label><input class="fi" id="mPDer" type="number" step="0.1" placeholder="37"/></div>
       </div>
       <button class="btn-primary" onclick="saveMedidas()">Guardar medidas</button>
     </div>
@@ -479,13 +459,13 @@
 </div>
 
 <!-- MODAL COPIAR RUTINA -->
-<div class="overlay" id="copyOverlay" onclick="if(event.target===this)closeCopyRoutine()">
+<div class="overlay" id="ovCopy" onclick="handleOvClick(event,'ovCopy','closeCopyRoutine')">
   <div class="modal" style="max-width:420px">
-    <div class="modal-header"><span class="modal-title">Copiar rutina</span><button class="modal-close" onclick="closeCopyRoutine()">✕</button></div>
-    <div class="modal-body">
-      <p class="modal-desc">Los ejercicios se añaden al perfil destino sin reemplazar los existentes.</p>
-      <div class="form-group"><label class="form-label">Copiar de</label><select class="form-select" id="copyFrom"></select></div>
-      <div class="form-group"><label class="form-label">Copiar a</label><select class="form-select" id="copyTo"></select></div>
+    <div class="mh"><span class="mt">Copiar rutina</span><button class="mc" onclick="closeCopyRoutine()">✕</button></div>
+    <div class="mb">
+      <p class="mdesc">Los ejercicios se añaden al perfil destino sin reemplazar los existentes.</p>
+      <div class="fg"><label class="fl">Copiar de</label><select class="fi" id="copyFrom"></select></div>
+      <div class="fg"><label class="fl">Copiar a</label><select class="fi" id="copyTo"></select></div>
       <button class="btn-primary" onclick="executeCopyRoutine()">Copiar rutina</button>
     </div>
   </div>
