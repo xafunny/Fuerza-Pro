@@ -27,32 +27,26 @@
       <button class="atab active" id="atLogin"    onclick="switchAuth('login')">Iniciar sesión</button>
       <button class="atab"        id="atRegister" onclick="switchAuth('register')">Registrarse</button>
     </div>
-
-    <!-- LOGIN -->
     <div id="formLogin">
       <div class="fg"><label class="fl">Correo electrónico</label><input class="fi" id="lEmail" type="email" placeholder="correo@ejemplo.com" autocomplete="email"/></div>
-      <div class="fg"><label class="fl">Contraseña</label><input class="fi" id="lPass" type="password" placeholder="Tu contraseña" autocomplete="current-password"/></div>
+      <div class="fg"><label class="fl">Contraseña</label><div class="pass-wrap"><input class="fi" id="lPass" type="password" placeholder="Tu contraseña" autocomplete="current-password"/><button class="btn-eye" type="button" onclick="togglePass('lPass',this)" title="Ver contraseña">👁</button></div></div>
       <div class="auth-err hidden" id="lErr"></div>
       <div class="resend-wrap hidden" id="resendWrap">
         <span>¿No recibiste el correo?</span>
         <button class="link-btn" onclick="resendVerification()">Reenviar verificación</button>
       </div>
-      <button class="btn-primary" onclick="handleLogin()">Entrar</button>
+      <button class="btn-primary" id="btnLogin" onclick="handleLogin()">Entrar</button>
       <button class="link-btn center" onclick="switchAuth('forgot')">¿Olvidaste tu contraseña?</button>
     </div>
-
-    <!-- REGISTRO -->
     <div id="formRegister" class="hidden">
       <div class="fg"><label class="fl">Nombre de usuario</label><input class="fi" id="rUser" placeholder="sin espacios, ej: ana_garcia" autocomplete="username"/></div>
       <div class="fg"><label class="fl">Correo electrónico</label><input class="fi" id="rEmail" type="email" placeholder="correo@ejemplo.com" autocomplete="email"/></div>
-      <div class="fg"><label class="fl">Contraseña</label><input class="fi" id="rPass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/></div>
-      <div class="fg"><label class="fl">Confirmar contraseña</label><input class="fi" id="rPass2" type="password" placeholder="Repite tu contraseña" autocomplete="new-password"/></div>
+      <div class="fg"><label class="fl">Contraseña</label><div class="pass-wrap"><input class="fi" id="rPass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/><button class="btn-eye" type="button" onclick="togglePass('rPass',this)" title="Ver contraseña">👁</button></div></div>
+      <div class="fg"><label class="fl">Confirmar contraseña</label><div class="pass-wrap"><input class="fi" id="rPass2" type="password" placeholder="Repite tu contraseña" autocomplete="new-password"/><button class="btn-eye" type="button" onclick="togglePass('rPass2',this)" title="Ver contraseña">👁</button></div></div>
       <div class="auth-err hidden" id="rErr"></div>
       <div class="verify-ok hidden" id="verifyOk">Cuenta creada. Revisa tu correo para verificar tu cuenta antes de iniciar sesión.</div>
       <button class="btn-primary" onclick="handleRegister()">Crear cuenta</button>
     </div>
-
-    <!-- RECUPERAR -->
     <div id="formForgot" class="hidden">
       <p class="auth-desc">Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</p>
       <div class="fg"><label class="fl">Correo electrónico</label><input class="fi" id="fEmail" type="email" placeholder="correo@ejemplo.com"/></div>
@@ -142,7 +136,8 @@
       <div class="ph">
         <h2 class="ptitle" id="dayTitle">LUNES</h2>
         <div class="ph-actions">
-          <button class="btn-sm admin-only hidden" onclick="openMoveModal()">Mover ejercicios</button>
+          <button class="btn-sm admin-only hidden" onclick="openLibraryModal()">Biblioteca</button>
+          <button class="btn-sm admin-only hidden" onclick="openMoveModal()">Mover días</button>
           <button class="btn-sm admin-only hidden" onclick="openSaveRoutineModal()">Guardar rutina</button>
         </div>
       </div>
@@ -171,11 +166,17 @@
         <button class="stab"        id="pstGraficas" onclick="switchProg('graficas')">Gráficas</button>
       </div>
       <div id="ppComp">
-        <div class="ph" style="margin-top:20px"><h2 class="ptitle sm">Composición Corporal</h2><button class="btn-sm" onclick="openBodyModal()">+ Registro</button></div>
+        <div class="ph" style="margin-top:20px">
+          <h2 class="ptitle sm">Composición Corporal</h2>
+          <button class="btn-sm" onclick="openBodyModal()">+ Registro</button>
+        </div>
         <div id="bodyLatest"></div><div id="bodyHist"></div>
       </div>
       <div id="ppMedidas" class="hidden">
-        <div class="ph" style="margin-top:20px"><h2 class="ptitle sm">Medidas Corporales</h2><button class="btn-sm" onclick="openMedidasModal()">+ Registro</button></div>
+        <div class="ph" style="margin-top:20px">
+          <h2 class="ptitle sm">Medidas Corporales</h2>
+          <button class="btn-sm" onclick="openMedidasModal()">+ Registro</button>
+        </div>
         <div id="medidasLatest"></div><div id="medidasHist"></div>
       </div>
       <div id="ppGraficas" class="hidden">
@@ -191,7 +192,7 @@
         </div>
         <h3 class="ssub">Peso por ejercicio</h3>
         <div id="wCharts"></div>
-        <h3 class="ssub mt16">Medidas</h3>
+        <h3 class="ssub mt16">Medidas corporales</h3>
         <div class="card">
           <div class="ctabs" id="medCtabs"></div>
           <div class="chart-wrap"><canvas id="medChart"></canvas><div class="chart-empty" id="medChartEmpty"><p>Agrega 2 o más registros de medidas</p></div></div>
@@ -205,7 +206,7 @@
     <main class="main">
       <div class="ph"><h2 class="ptitle">Ciclo de Entrenamiento</h2></div>
       <div class="card mb16" id="cycleHero"></div>
-      <div class="card admin-only hidden" id="cycleConfig">
+      <div class="card admin-only hidden mb16" id="cycleConfig">
         <h3 class="card-title">Configurar ciclo</h3>
         <div class="form-row">
           <div class="fg"><label class="fl">Fecha inicio</label><input class="fi" id="cyStart" type="date"/></div>
@@ -214,6 +215,8 @@
         <div class="fg"><label class="fl">Nombre del ciclo</label><input class="fi" id="cyName" placeholder="Ej: Volumen, Definición..."/></div>
         <button class="btn-primary" onclick="saveCycle()">Guardar ciclo</button>
       </div>
+      <!-- Historial de ciclos finalizados -->
+      <div id="cycleHistory"></div>
     </main>
   </div>
 
@@ -223,9 +226,8 @@
       <div class="ph"><h2 class="ptitle">Mi Perfil</h2><button class="btn-sm" onclick="saveProfile()">Guardar cambios</button></div>
       <div class="profile-avatar-wrap">
         <div class="profile-avatar" id="profileAvatar"></div>
-        <button class="btn-sm" onclick="document.getElementById('avatarUrlInput').focus()">Cambiar foto</button>
       </div>
-      <div class="fg"><label class="fl">URL de foto de perfil</label><input class="fi" id="avatarUrlInput" placeholder="https://... (link de tu foto)" oninput="previewAvatar()"/><div class="fhint">Sube tu foto a imgur.com o usa un link de Google Photos</div></div>
+      <div class="fg"><label class="fl">URL de foto de perfil</label><input class="fi" id="avatarUrlInput" placeholder="https://... (link de tu foto)" oninput="previewAvatar()"/><div class="fhint">Sube tu foto a imgur.com y pega el link aquí</div></div>
       <div class="form-row">
         <div class="fg"><label class="fl">Nombre</label><input class="fi" id="pNombre" placeholder="Tu nombre"/></div>
         <div class="fg"><label class="fl">Apellido</label><input class="fi" id="pApellido" placeholder="Tu apellido"/></div>
@@ -235,15 +237,21 @@
         <div class="fg"><label class="fl">Teléfono</label><input class="fi" id="pTel" type="tel" placeholder="+593..."/></div>
       </div>
       <div class="fg"><label class="fl">Ciudad</label><input class="fi" id="pCiudad" placeholder="Tu ciudad"/></div>
-      <div class="fg"><label class="fl">Objetivo principal</label><input class="fi" id="pObjetivo" placeholder="Ej: Ganar músculo, perder grasa..."/></div>
-      <div class="profile-info-card" id="profileInfoCard"></div>
+      <div class="fg"><label class="fl">Objetivo principal</label><input class="fi" id="pObjetivo" placeholder="Ej: Ganar músculo..."/></div>
+      <div id="profileInfoCard"></div>
     </main>
   </div>
 
   <!-- ADMIN -->
   <div id="panelAdmin" class="hidden">
     <main class="main">
-      <div class="ph"><h2 class="ptitle">Administración</h2><button class="btn-sm" onclick="openSavedRoutinesModal()">Rutinas guardadas</button></div>
+      <div class="ph">
+        <h2 class="ptitle">Administración</h2>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn-sm" onclick="openSavedRoutinesModal()">Rutinas guardadas</button>
+          <button class="btn-sm" onclick="openLibraryModal()">Biblioteca</button>
+        </div>
+      </div>
       <div class="search-box"><input class="fi" id="userSearch" placeholder="Buscar usuario..." oninput="filterUsers()"/></div>
       <div id="usersPanel"></div>
       <div class="card mt16" id="adminManage">
@@ -252,7 +260,7 @@
           <div class="fg"><label class="fl">Seleccionar usuario</label>
             <select class="fi" id="adminSel" onchange="adminLoadUser()"><option value="">— Seleccionar —</option></select>
           </div>
-          <div class="fg" style="display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap">
+          <div class="fg" style="display:flex;align-items:flex-end;gap:6px;flex-wrap:wrap">
             <button class="btn-sm" onclick="openCopyRoutine()">Copiar rutina</button>
             <button class="btn-sm danger" onclick="deleteSelectedUser()">Eliminar usuario</button>
           </div>
@@ -269,7 +277,7 @@
     <div class="mh"><span class="mt" id="exModalTitle">Nuevo Ejercicio</span><button class="mc" onclick="closeModal()">✕</button></div>
     <div class="mb">
       <div class="fg"><label class="fl">Nombre *</label>
-        <input class="fi" id="fName" placeholder="Ej: Press de banca..." list="exSuggestions" autocomplete="off"/>
+        <input class="fi" id="fName" placeholder="Escribe o elige de la biblioteca..." list="exSuggestions" autocomplete="off"/>
         <datalist id="exSuggestions"></datalist>
       </div>
       <div class="fg"><label class="fl">Día *</label>
@@ -283,7 +291,7 @@
         <div class="fg"><label class="fl">Reps</label><input class="fi" id="fReps" type="number" min="1" placeholder="12"/></div>
         <div class="fg"><label class="fl">Descanso</label><input class="fi" id="fRest" placeholder="60s"/></div>
       </div>
-      <div class="fg"><label class="fl">Peso inicial (kg)</label><input class="fi" id="fWeight" type="number" step="0.5" placeholder="Ej: 40"/><div class="fhint">Se registra el historial semana a semana</div></div>
+      <div class="fg"><label class="fl">Peso inicial (kg)</label><input class="fi" id="fWeight" type="number" step="0.5" placeholder="Ej: 40"/><div class="fhint">Se guarda historial semana a semana</div></div>
       <div class="fg"><label class="fl">Grupo muscular</label>
         <select class="fi" id="fMuscle">
           <option value="">— Seleccionar —</option>
@@ -307,6 +315,17 @@
   </div>
 </div>
 
+<!-- MODAL BIBLIOTECA -->
+<div class="overlay" id="ovLibrary" onclick="handleOvClick(event,'ovLibrary','closeLibraryModal')">
+  <div class="modal">
+    <div class="mh"><span class="mt">Biblioteca de ejercicios</span><button class="mc" onclick="closeLibraryModal()">✕</button></div>
+    <div class="mb">
+      <p class="mdesc">Ejercicios guardados anteriormente. Haz clic en "Usar" para agregar uno rápidamente.</p>
+      <div id="exLibraryList"></div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL PESO -->
 <div class="overlay" id="ovWeight" onclick="handleOvClick(event,'ovWeight','closeWeightModal')">
   <div class="modal" style="max-width:380px">
@@ -319,12 +338,12 @@
   </div>
 </div>
 
-<!-- MODAL MOVER EJERCICIOS -->
+<!-- MODAL MOVER DÍAS -->
 <div class="overlay" id="ovMove" onclick="handleOvClick(event,'ovMove','closeMoveModal')">
   <div class="modal" style="max-width:420px">
-    <div class="mh"><span class="mt">Mover ejercicios</span><button class="mc" onclick="closeMoveModal()">✕</button></div>
+    <div class="mh"><span class="mt">Mover / Intercambiar días</span><button class="mc" onclick="closeMoveModal()">✕</button></div>
     <div class="mb">
-      <p class="mdesc">Intercambia o mueve todos los ejercicios de un día a otro.</p>
+      <p class="mdesc">Mueve o intercambia todos los ejercicios entre dos días.</p>
       <div class="form-row">
         <div class="fg"><label class="fl">Día origen</label>
           <select class="fi" id="moveFrom">
@@ -339,7 +358,7 @@
       </div>
       <div class="fg"><label class="fl">Acción</label>
         <div class="radio-row">
-          <label class="radio-opt"><input type="radio" name="moveAction" value="move" checked/> Mover (solo origen → destino)</label>
+          <label class="radio-opt"><input type="radio" name="moveAction" value="move" checked/> Mover (origen → destino)</label>
           <label class="radio-opt"><input type="radio" name="moveAction" value="swap"/> Intercambiar ambos días</label>
         </div>
       </div>
