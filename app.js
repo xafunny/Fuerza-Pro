@@ -5,7 +5,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import {
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  sendEmailVerification, sendPasswordResetEmail, signOut, onAuthStateChanged
+  sendEmailVerification, sendPasswordResetEmail, signOut, onAuthStateChanged,
+  signInAnonymously
 } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, getDoc, deleteDoc,
@@ -170,7 +171,7 @@ function checkPersistedSession() {
   if (saved) {
     const fixed = FIXED.find(u => u.username === saved);
     if (fixed) {
-      ensureFixedUser(fixed).then(() => enterApp(fixed.username, fixed.username));
+      ensureAuthSession().then(() => ensureFixedUser(fixed)).then(() => enterApp(fixed.username, fixed.username));
       return;
     }
     // Firebase Auth — onAuthStateChanged lo maneja
@@ -233,6 +234,7 @@ window.handleLogin = async () => {
     (u.username.toLowerCase()===input || (u.email&&u.email.toLowerCase()===input)) && u.password===pass
   );
   if (fixed) {
+    await ensureAuthSession();
     await ensureFixedUser(fixed);
     localStorage.setItem(SESSION_KEY, fixed.username);
     enterApp(fixed.username, fixed.username);
@@ -250,6 +252,21 @@ window.handleLogin = async () => {
     }
   } catch(e) { show(err, authMsg(e.code)); }
 };
+
+/*
+  Los usuarios FIXED (jhoao/karen) no iniciaban sesión real en Firebase Auth,
+  por lo que request.auth era null para ellos y las reglas de Firestore
+  bloqueaban silenciosamente la lectura de la colección completa 'usuarios'
+  (por eso el admin solo se veía a sí mismo). Con signInAnonymously les damos
+  una sesión de Auth válida para que las reglas que exigen "request.auth != null"
+  dejen pasar la consulta.
+*/
+async function ensureAuthSession() {
+  if (!auth.currentUser) {
+    try { await signInAnonymously(auth); }
+    catch (e) { console.error('Error en autenticación anónima:', e); }
+  }
+}
 
 async function ensureFixedUser(fixed) {
   const ref  = doc(db,'usuarios',fixed.username);
