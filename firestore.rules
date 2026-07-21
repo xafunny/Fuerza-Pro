@@ -1,0 +1,105 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ═══════════════════════════════════════════════════════
+       Fuerza Pro — Reglas de seguridad
+       Estas reglas se aplican en el SERVIDOR de Google: nadie
+       puede saltárselas modificando el código de la app.
+       Cómo publicarlas: Firebase Console → Firestore Database
+       → Reglas → pegar este archivo → Publicar.
+    ═══════════════════════════════════════════════════════ */
+
+    /* Correo del administrador principal (dueño de la app).
+       Cámbialo aquí si algún día cambias de correo. */
+    function esOwner() {
+      return request.auth != null
+        && request.auth.token.email == 'jhoaoxavier2365335@gmail.com';
+    }
+
+    function autenticado() {
+      /* Solo cuentas reales con correo VERIFICADO */
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function esAdmin() {
+      return autenticado() && (
+        esOwner() ||
+        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    /* ── Usuarios ── */
+    match /usuarios/{uid} {
+      /* Leer: solo el dueño de la cuenta o un admin. Así el teléfono,
+         correo y datos personales de cada usuario quedan protegidos. */
+      allow get: if autenticado() && (request.auth.uid == uid || esAdmin());
+      allow list: if esAdmin();
+      allow create: if autenticado() && request.auth.uid == uid;
+      allow delete: if esAdmin();
+      allow update: if esAdmin() || (
+        autenticado() && request.auth.uid == uid
+        /* Un usuario normal NO puede cambiarse su propio rol */
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])
+      );
+
+      /* ── Fotos de progreso: 100% PRIVADAS ──
+         Solo el dueño. Ni siquiera el admin puede leerlas. */
+      match /fotosProgreso/{fotoId} {
+        allow read, write: if autenticado() && request.auth.uid == uid;
+      }
+    }
+
+    /* ── Reserva de nombres de usuario ── */
+    match /usernames/{uname} {
+      allow read: if true;              /* comprobar disponibilidad al registrarse */
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if esAdmin();
+    }
+
+    /* ── Configuración compartida ── */
+    match /config/exLibrary {
+      allow read, write: if autenticado();   /* la biblioteca la alimentan todos */
+    }
+    match /config/ciclo {
+      allow read: if autenticado();
+      allow write: if esAdmin();
+    }
+    match /config/ai {
+      allow read: if autenticado();          /* la app necesita la clave para llamar a Gemini */
+      allow write: if esAdmin();
+    }
+
+    /* ── Rutinas guardadas (plantillas) ── */
+    match /rutinas/{id} {
+      allow read: if autenticado();
+      allow write: if esAdmin();
+    }
+
+    /* ── Historial de ciclos ── */
+    match /historialCiclos/{id} {
+      allow read: if autenticado();
+      allow write: if esAdmin();
+    }
+
+    /* ── Grupos ── */
+    match /grupos/{id} {
+      allow read: if autenticado();
+      allow write: if esAdmin();
+    }
+
+    /* ── Correos bloqueados (usuarios eliminados) ── */
+    match /bloqueados/{email} {
+      /* Cada usuario solo puede consultar SU propio correo al iniciar sesión */
+      allow get: if request.auth != null && email == request.auth.token.email;
+      allow list: if esAdmin();
+      allow write: if esAdmin();
+    }
+
+    /* Todo lo demás: denegado */
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
