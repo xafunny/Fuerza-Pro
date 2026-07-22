@@ -82,6 +82,8 @@ window.adminLoadUser = async () => {
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <button class="btn-sm" onclick="adminOpenEx('${uid}')">+ Ejercicio</button>
         <button class="btn-sm" onclick="openMealModal('${S.currentDietDay}','${uid}')">+ Comida</button>
+        <button class="btn-sm" onclick="adminSaveRoutine('${uid}')">💾 Guardar rutina</button>
+        <button class="btn-sm" onclick="adminCopyFrom('${uid}')">→ Copiar a otro</button>
         ${esOwner?`<button class="btn-sm" onclick="toggleAdminRole('${uid}')">${d.role==='admin'?'Quitar admin':'Hacer admin'}</button>`:''}
       </div>
     </div>
@@ -153,6 +155,20 @@ window.adminOpenEx = uid => {
   $('fEditId').value = '';
   $('exModalTitle').textContent = 'Nuevo ejercicio';
   $('ovExercise').classList.add('open');
+};
+
+/* Guardar como plantilla la rutina del usuario seleccionado */
+window.adminSaveRoutine = async uid => {
+  await window.openSaveRoutineModal();
+  const sel = $('routineUserSel');
+  if ([...sel.options].some(o => o.value === uid)) sel.value = uid;
+};
+
+/* Abrir la herramienta de copia con este usuario como origen */
+window.adminCopyFrom = async uid => {
+  await window.openCopyRoutine();
+  const sel = $('copyFrom');
+  if ([...sel.options].some(o => o.value === uid)) sel.value = uid;
 };
 
 /* ── Dar / quitar admin (solo el dueño) ── */
@@ -229,17 +245,49 @@ window.migrateLegacy = async legacyId => {
   renderAdmin();
 };
 
-/* ── Copiar rutina ── */
+/* ── Copiar / migrar entre usuarios ──
+   Tres niveles: solo ejercicios (sin pesos), ejercicios con pesos,
+   o TODO el perfil (ejercicios, pesos, dieta, medidas y composición).
+   Modo: agregar a lo existente o reemplazarlo. */
 window.openCopyRoutine = async () => { await renderAdmin(); $('ovCopy').classList.add('open'); };
 window.closeCopyRoutine = () => $('ovCopy').classList.remove('open');
+
 window.executeCopyRoutine = async () => {
   const from = $('copyFrom').value, to = $('copyTo').value;
   if (!from || !to || from === to) { alert('Selecciona usuarios distintos.'); return; }
-  const snapF = await getDoc(doc(db,'usuarios',from)), snapT = await getDoc(doc(db,'usuarios',to));
+  const what = document.querySelector('input[name="copyWhat"]:checked')?.value || 'exercises_clean';
+  const mode = document.querySelector('input[name="copyMode"]:checked')?.value || 'add';
+
+  const snapF = await getDoc(doc(db,'usuarios',from));
   if (!snapF.exists()) { alert('Usuario origen no encontrado.'); return; }
-  const fromEx = (snapF.data().exercises||[]).map(e => ({ ...e, id: genId() }));
-  const toEx = [...(snapT.data()?.exercises||[]), ...fromEx];
-  await saveUID(to, { exercises: toEx });
+  const snapT = await getDoc(doc(db,'usuarios',to));
+  const fd = snapF.data(), td = snapT.data()||{};
+
+  const nombreF = fd.username||from, nombreT = td.username||to;
+  const etiqueta = { exercises_clean:'solo los ejercicios (sin pesos)',
+                     exercises_full:'los ejercicios con sus pesos',
+                     all:'TODO el perfil (ejercicios, pesos, dieta, medidas y composición)' }[what];
+  if (!confirm(`Se copiará ${etiqueta} de "${nombreF}" a "${nombreT}" (${mode==='replace'?'REEMPLAZANDO lo que ya tiene':'agregando a lo que ya tiene'}). ¿Continuar?`)) return;
+
+  /* Ejercicios: ids nuevos; si es "sin pesos", el historial va vacío */
+  const fromEx = (fd.exercises||[]).map(ex => ({
+    ...ex, id: genId(),
+    weightHistory: what === 'exercises_clean' ? [] : (ex.weightHistory||[])
+  }));
+  const upd = { exercises: mode==='replace' ? fromEx : [...(td.exercises||[]), ...fromEx] };
+
+  if (what === 'all') {
+    const fromMeals = (fd.meals||[]).map(m => ({ ...m, id: genId() }));
+    upd.meals = mode==='replace' ? fromMeals : [...(td.meals||[]), ...fromMeals];
+    const porFecha = (a,b) => (a.date||'').localeCompare(b.date||'');
+    const fromBody = (fd.bodyData||[]).map(r => ({ ...r, id: genId() }));
+    const fromMed  = (fd.medidasData||[]).map(r => ({ ...r, id: genId() }));
+    upd.bodyData    = (mode==='replace' ? fromBody : [...(td.bodyData||[]), ...fromBody]).sort(porFecha);
+    upd.medidasData = (mode==='replace' ? fromMed  : [...(td.medidasData||[]), ...fromMed]).sort(porFecha);
+  }
+
+  await saveUID(to, upd);
   window.closeCopyRoutine();
-  alert('Rutina copiada correctamente.');
+  alert(`Listo: se copió ${etiqueta} de "${nombreF}" a "${nombreT}".`);
+  if (to === S.UID || from === S.UID) window.adminLoadUser();
 };
